@@ -7,6 +7,7 @@ const Home = () => {
             title="Learnzo"
             description="Learnzo dashboard page"
         />
+        home
     </>
   )
 }
