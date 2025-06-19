@@ -17,6 +17,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useSignInMutation } from "@/services/authApi";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -29,7 +30,9 @@ const formSchema = z.object({
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const [ showPassword, setShowPassword ] = useState(false);
+  const [signIn] = useSignInMutation();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,8 +42,16 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async(values: z.infer<typeof formSchema>) => {
+    try {
+      const { email, password } = values;
+
+      const response = await signIn({ email, password }).unwrap();
+
+      console.log("response :", response)
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
@@ -56,7 +67,7 @@ const LoginForm = () => {
                 <FormControl>
                   <Input
                     type="email"
-                    className="rounded-sm h-12"
+                    className="rounded-sm h-12 w-full"
                     placeholder="name@gmail.com"
                     {...field}
                   />
@@ -102,7 +113,7 @@ const LoginForm = () => {
               </FormItem>
             )}
           />
-          <Button className="text-lg w-full h-13 rounded-sm text-white cursor-pointer bg-[#2F4021] hover:bg-[#2f4021f4] mt-10">
+          <Button type="submit" className="text-lg w-full h-13 rounded-sm text-white cursor-pointer bg-[#2F4021] hover:bg-[#2f4021f4] mt-10">
             Sign In
           </Button>
         </form>

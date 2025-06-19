@@ -141,6 +141,21 @@ html, body, #root {
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  box-shadow:
+    0 0 0px 1000px #f3f3f1 inset,  /* autofill background */
+    0 0 0 2px #CBD5E1 !important;  /* border color (slate-300) */
+  -webkit-text-fill-color: #1e1e1e !important;
+  border-radius: 6px;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+
+
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

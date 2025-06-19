@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Eye, EyeOff, Loader, Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -16,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { useSignUpMutation } from "@/services/authApi";
 
 const formSchema = z
   .object({
@@ -40,8 +41,9 @@ const formSchema = z
 
 const RegisterForm = () => {
   const navigate = useNavigate();
-    const [ showPassword, setShowPassword ] = useState(false);
-  
+  const [signUp, { isLoading, error }] = useSignUpMutation();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,8 +53,25 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const { fullName, email, password, confirmPassword } = values;
+
+      const response = await signUp({
+        fullName,
+        email,
+        password,
+        confirmPassword,
+      }).unwrap();
+      const { data } = response;
+
+      // Store token and email for verification
+      localStorage.setItem("otpToken", data.token);
+      localStorage.setItem("otpEmail", data.email);
+      navigate(`/?authMode=verify-otp`);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -130,7 +149,9 @@ const RegisterForm = () => {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-md font-bold">Confirm Password*</FormLabel>
+                <FormLabel className="text-md font-bold">
+                  Confirm Password*
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -144,8 +165,14 @@ const RegisterForm = () => {
               </FormItem>
             )}
           />
-          <Button className="text-lg w-full h-13 rounded-sm text-white cursor-pointer bg-[#2F4021] hover:bg-[#2f4021f4] mt-10">
-            Sign In
+          <Button
+            disabled={isLoading}
+            className="text-lg flex w-full h-13 rounded-sm text-white cursor-pointer bg-[#2F4021] hover:bg-[#2f4021f4] mt-10"
+          >
+            {isLoading && (
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            )}
+            Sign Up
           </Button>
         </form>
       </Form>
