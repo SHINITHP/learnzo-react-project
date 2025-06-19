@@ -2,12 +2,14 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X as CloseIcon, Search } from "lucide-react";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface MenuModalProps {
   onClose: () => void;
 }
 
 const MenuModal: React.FC<MenuModalProps> = ({ onClose }) => {
+  const navigate = useNavigate();
   return (
     <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-start">
       <AnimatePresence>
@@ -35,7 +37,7 @@ const MenuModal: React.FC<MenuModalProps> = ({ onClose }) => {
           <section>{/* body content */}</section>
 
           <footer className="border-t-4 p-3">
-            <Button className="text-lg w-full h-13 rounded-sm bg-transparent text-[#2F4021] cursor-pointer border border-[#2F4021] hover:bg-[#2F4021] hover:text-white transition-all duration-300 ease-in-out">Sign In</Button>
+            <Button className="text-lg w-full h-13 rounded-sm bg-transparent text-[#2F4021] cursor-pointer border border-[#2F4021] hover:bg-[#2F4021] hover:text-white transition-all duration-300 ease-in-out" onClick={() => navigate("/?authMode=sign-in")} >Sign In</Button>
             <Button className="text-lg w-full h-13 rounded-sm mt-2 cursor-pointer transition-all duration-300 ease-in-out bg-[#2F4021] text-[#fff] hover:bg-[#2F4021] hover:text-[#fff]">Get Started</Button>
           </footer>
         </motion.div>

@@ -38,7 +38,7 @@ export default function SearchBox() {
         />
         <button
           type="submit"
-          className=" text-lg text-white cursor-pointer transition-all duration-300 ease-in-out absolute h-full right-0 top-0 w-28 bg-[#2F4021] focus:ring-4 focus:outline-none rounded-4xl focus:ring-blue-300 font-medium px-4 py-2 "
+          className=" text-lg text-[#2F4021] font-medium cursor-pointer transition-all duration-300 ease-in-out absolute h-full right-0 top-0 w-28 bg-[#AFD275] focus:ring-4 focus:outline-none rounded-4xl focus:ring-blue-300 px-4 py-2 "
         >
           Search
         </button>
