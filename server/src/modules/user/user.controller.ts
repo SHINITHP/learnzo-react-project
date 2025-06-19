@@ -21,7 +21,15 @@ export const verify = async(req: Request, res: Response, next: NextFunction): Pr
     try {
         const { email, otp, token } = req.body;
         const result = await AuthService.verifyOTP({ email, otp, token });
-        ApiResponse.success(res, 'User Created successfully!', result, 201)
+
+        res.cookie("refreshToken", result.refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+
+        ApiResponse.success(res, 'User Created successfully!', { user: result.user, token: result.accessToken }, 201)
     } catch (error) {
         logger.error('Error in verify:', error);
         next(error)

@@ -5,13 +5,16 @@ declare type TransferParams = {
   amount: string;
 };
 
-
 export interface VerifyOTPRequest {
   email: string;
   otp: string;
   token: string;
 }
 
-export interface VerifyOTPResponse {
-  message: string;
+export interface IRefreshToken {
+    token: string;
+    user: Types.ObjectId;
+    expiresAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }

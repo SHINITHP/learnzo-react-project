@@ -1,15 +1,4 @@
-import { Document } from "mongoose";
-
-export interface IUser extends Document {
-  fullName: string;
-  email: string;
-  password: string;
-  createdAt?: Date;
-  resetToken?: string;
-  role: "student" | "instructor" | "admin";
-  status: "pending" | "verified";
-  comparePassword(candidatePassword: string): Promise<boolean>;
-}
+import { Document, Types } from "mongoose";
 
 export interface ISignUpData {
   fullName: string;

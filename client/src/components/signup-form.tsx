@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Eye, EyeOff, Loader, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -41,7 +41,7 @@ const formSchema = z
 
 const RegisterForm = () => {
   const navigate = useNavigate();
-  const [signUp, { isLoading, error }] = useSignUpMutation();
+  const [signUp, { isLoading }] = useSignUpMutation();
 
   const [showPassword, setShowPassword] = useState(false);
 

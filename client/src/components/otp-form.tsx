@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 import { useVerifyOTPMutation } from "@/services/authApi";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setAuth } from "@/redux/slices/authSlice";
 // import { toast } from "sonner"; // optional: for feedback
 
 interface OtpFormData {
@@ -13,8 +15,9 @@ interface OtpFormData {
 }
 
 const OtpForm = () => {
-    const navigate = useNavigate();
-  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const email = localStorage.getItem("otpEmail");
   const token = localStorage.getItem("otpToken");
   const [verifyOtp, { isLoading }] = useVerifyOTPMutation();
@@ -45,9 +48,15 @@ const OtpForm = () => {
         otp: joinedOtp,
         token,
       }).unwrap();
+      const { data } = response;
 
-      if(response.success) navigate('/');
+      if (response.success) {
+        localStorage.removeItem("otpToken");
+        localStorage.removeItem("otpEmail");
+        dispatch(setAuth({ token: data.token, user: data.user }));
 
+        navigate("/");
+      }
     } catch (error) {
       console.log(error);
     }
