@@ -1,6 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "@/redux/store";
-import type { VerifyOTPRequest } from "@/types";
+import type {
+  ISignUpRequest,
+  ISignUpResponse,
+  IVerifyOTPResponse,
+  IVerifyOTPRequest,
+  ISignInResponse,
+  ISignInRequest,
+} from "@/types";
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -13,40 +20,21 @@ export const authApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    signIn: builder.mutation({
+    signIn: builder.mutation<ISignInResponse, ISignInRequest>({
       query: (credentials) => ({
         url: "sign-in",
         method: "POST",
         body: credentials,
       }),
     }),
-    signUp: builder.mutation<
-      {
-        success: boolean;
-        message: string;
-        data: { email: string; token: string };
-      },
-      {
-        fullName: string;
-        email: string;
-        password: string;
-        confirmPassword: string;
-      }
-    >({
+    signUp: builder.mutation<ISignUpResponse, ISignUpRequest>({
       query: (credentials) => ({
         url: "sign-up",
         method: "POST",
         body: credentials,
       }),
     }),
-    verifyOTP: builder.mutation<
-      {
-        success: boolean;
-        message: string;
-        data: any;
-      },
-      VerifyOTPRequest
-    >({
+    verifyOTP: builder.mutation<IVerifyOTPResponse, IVerifyOTPRequest>({
       query: (data) => ({
         url: "verify-otp",
         method: "POST",

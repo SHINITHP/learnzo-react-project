@@ -5,6 +5,7 @@ import "./index.css";
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { Provider } from "react-redux";
 import { store } from "./redux/store.ts";
+import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -13,5 +14,6 @@ createRoot(document.getElementById("root")!).render(
         <App />
       </AppWrapper>
     </Provider>
+    <Toaster position="top-center" reverseOrder={false} />
   </StrictMode>
 );

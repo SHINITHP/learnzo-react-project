@@ -8,7 +8,7 @@ import { useVerifyOTPMutation } from "@/services/authApi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAuth } from "@/redux/slices/authSlice";
-// import { toast } from "sonner"; // optional: for feedback
+import toast from "react-hot-toast";
 
 interface OtpFormData {
   otp: string[];
@@ -54,11 +54,12 @@ const OtpForm = () => {
         localStorage.removeItem("otpToken");
         localStorage.removeItem("otpEmail");
         dispatch(setAuth({ token: data.token, user: data.user }));
-
         navigate("/");
+        toast.success("Welcome to LearnEase!");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      toast.error(error.data?.message);
     }
   };
 

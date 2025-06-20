@@ -6,6 +6,7 @@ import { connectDB } from "./config/db";
 dotenv.config();
 
 import userRoutes from './modules/user/user.routes'
+import { errorHandler } from "./middleware/errorHandler";
 const PORT = process.env.PORT || 3000;
 
 
@@ -30,17 +31,7 @@ app.use((req, res, next) => {
 app.use("/api/auth", userRoutes);
 
 //Error handling
-app.use(
-  (
-    err: Error,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    logger.error(err.message);
-    res.status(500).json({ error: "Server error" });
-  }
-);
+app.use(errorHandler);
 
 app.listen(PORT, async () => {
   console.log("API Key:", process.env.SENDGRID_API_KEY);

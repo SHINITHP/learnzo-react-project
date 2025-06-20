@@ -4,14 +4,15 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import MenuModal from "@/components/menubar-modal";
 import { useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfileButton } from "@/components/profile-button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectIsAuthenticated } from "@/redux/slices/authSlice";
+import { logout } from "@/redux/slices/authSlice";
 
 const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
   return (
@@ -51,7 +52,7 @@ const AppHeader = () => {
               avatarUrl="/user.jpg"
               onProfile={() => console.log("Go to profile")}
               onSettings={() => console.log("Go to settings")}
-              onLogout={() => console.log("Logout")}
+              onLogout={() => dispatch(logout()) }
             />
           </div>
         )}

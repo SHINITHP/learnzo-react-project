@@ -18,6 +18,9 @@ import { FaFacebookF } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useSignInMutation } from "@/services/authApi";
+import toast from "react-hot-toast";
+import { setAuth } from "@/redux/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -30,6 +33,8 @@ const formSchema = z.object({
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [signIn] = useSignInMutation();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -42,15 +47,20 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = async(values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const { email, password } = values;
 
       const response = await signIn({ email, password }).unwrap();
+      const { data } = response;
+      dispatch(setAuth({ token: data.token, user: data.user }));
+      navigate("/");
 
-      console.log("response :", response)
-    } catch (error) {
-      console.log(error)
+      toast.success("Sign-in successfull");
+
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.data?.message);
     }
   };
 
@@ -113,7 +123,10 @@ const LoginForm = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="text-lg w-full h-13 rounded-sm text-white cursor-pointer bg-[#2F4021] hover:bg-[#2f4021f4] mt-10">
+          <Button
+            type="submit"
+            className="text-lg w-full h-13 rounded-sm text-white cursor-pointer bg-[#2F4021] hover:bg-[#2f4021f4] mt-10"
+          >
             Sign In
           </Button>
         </form>
