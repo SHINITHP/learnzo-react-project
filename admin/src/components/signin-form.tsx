@@ -18,6 +18,9 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useSignInMutation } from "@/services/authApi";
+import { setAuth } from "@/redux/slices/authSlice";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -30,6 +33,9 @@ const formSchema = z.object({
 
 const SignInForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [signIn] = useSignInMutation();
+
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,10 +48,15 @@ const SignInForm = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values);
+      const response = await signIn(values).unwrap();
+      const { data } = response;
+      console.log(data);
+      dispatch(setAuth({ token: data.token, admin: data.admin }));
+      toast.success("Welcome back to LearnEase!");
+      navigate("/");
     } catch (error: any) {
       console.log(error);
-      toast.error(error.data?.message);
+      toast.error(error.data?.message || "Something went wrong!");
     }
   };
 

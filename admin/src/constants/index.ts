@@ -25,6 +25,22 @@ export const navbarLinks = [
         ],
     },
     {
+        title: "Courses",
+        links: [
+            {
+                label: "Courses",
+                icon: Package,
+                path: "/courses",
+            },
+            {
+                label: "New Course",
+                icon: PackagePlus,
+                path: "/add-course",
+            },
+            
+        ],
+    },
+    {
         title: "Customers",
         links: [
             {
@@ -44,26 +60,7 @@ export const navbarLinks = [
             },
         ],
     },
-    {
-        title: "Products",
-        links: [
-            {
-                label: "Products",
-                icon: Package,
-                path: "/products",
-            },
-            {
-                label: "New product",
-                icon: PackagePlus,
-                path: "/new-product",
-            },
-            {
-                label: "Inventory",
-                icon: ShoppingBag,
-                path: "/inventory",
-            },
-        ],
-    },
+    
     {
         title: "Settings",
         links: [

@@ -14,7 +14,7 @@ const StatCard = ({ Icon , title, value, trend, trendType }: IStatProps) => {
         <p className="w-fit text-2xl font-bold text-slate-900 dark:text-slate-50">
           {value}
         </p>
-        <span className="flex pl-4 pr-4 h-7 text-sm items-center gap-x-2 rounded-full bg-green-500/20  font-medium text-green-500 dark:text-green-500">
+        <span className={`flex pl-4 pr-4 h-7 text-sm items-center gap-x-2 rounded-full ${trendType === 'up' ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}  font-medium `}>
           {trendType === "up" ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
           {trend}%
         </span>
