@@ -64,7 +64,7 @@ export const courseApi = createApi({
 
 export const {
   useGetCoursesQuery,
-  useGetCourseByIdQuery,
+  useLazyGetCourseByIdQuery,
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useCreateAttachmentsMutation,

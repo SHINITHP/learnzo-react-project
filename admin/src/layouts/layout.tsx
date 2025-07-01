@@ -5,7 +5,7 @@ import { Sidebar } from "@/layouts/sidebar";
 import { Header } from "@/layouts/header";
 import { cn } from "@/utils/cn";
 import { useEffect, useRef, useState } from "react";
-
+import { Banner } from "@/components/banner";
 
 const Layout: React.FC = () => {
   const isDesktopDevice = useMediaQuery("(min-width: 768px)");
@@ -24,10 +24,10 @@ const Layout: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-slate-100 transition-colors dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-100 transition-colors dark:bg-slate-900">
       <div
         className={cn(
-          "pointer-events-none fixed inset-0 -z-10 bg-black opacity-0 transition-opacity",
+          "pointer-events-none fixed inset-0 -z-10 dark:bg-slate-900 opacity-0 transition-opacity",
           !collapsed &&
             "max-md:pointer-events-auto max-md:z-50 max-md:opacity-30"
         )}
@@ -40,7 +40,7 @@ const Layout: React.FC = () => {
         )}
       >
         <Header collapsed={collapsed} setCollapsed={setCollapsed} />
-        <div className="h-[calc(100vh-60px)] overflow-y-auto overflow-x-hidden p-3 md:p-6 dark:bg-slate-900">
+        <div className="p-3 md:p-6 dark:bg-slate-900">
           <Outlet />
         </div>
       </div>

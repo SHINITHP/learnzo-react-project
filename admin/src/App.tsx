@@ -7,8 +7,9 @@ import { ScrollToTop } from "@/components/common/ScrollToTop";
 import SignIn from "./pages/SignIn";
 import AuthCheck from "./hooks/AuthCheck";
 import RequireAuth from "./components/common/RequiredAuth";
-import AddCourse from "./pages/AddCourse";
-import EditCourse from "./pages/EditCourse";
+import AddCourse from "./pages/courses/AddCourse";
+import EditCourse from "./pages/courses/EditCourse";
+import AddChapter from "./pages/courses/AddChapter";
 
 function App() {
   return (
@@ -52,14 +53,10 @@ function App() {
               path="courses"
               element={<h1 className="title">Products</h1>}
             />
-            <Route
-              path="courses/:id/edit"
-              element={<EditCourse />}
-            />
-            <Route
-              path="add-course"
-              element={<AddCourse />}
-            />
+            <Route path="courses/:id" element={<EditCourse />} />
+            <Route path="courses/:id/chapters/:chapterId" element={<AddChapter />} />
+
+            <Route path="add-course" element={<AddCourse />} />
             <Route
               path="settings"
               element={<h1 className="title">Settings</h1>}

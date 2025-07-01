@@ -3,6 +3,7 @@ import ApiError from "../../utils/apiError";
 import { Course } from "../course/course.model";
 import { Chapter } from "./chapter.model";
 import logger from "../../utils/logger";
+import { IChapter } from "../../types";
 
 export default class ChapterServices {
   static async chapterCreationService(chapterData: {
@@ -17,10 +18,15 @@ export default class ChapterServices {
       authorId: chapterData.authorId,
     }).lean();
 
-    console.log("authorId :", chapterData.courseId , chapterData.authorId, courseOwner);
+    console.log(
+      "authorId :",
+      chapterData.courseId,
+      chapterData.authorId,
+      courseOwner
+    );
 
     if (!courseOwner) {
-      throw new ApiError(401, "Unauthorized or course not found");
+      throw new ApiError(401, "Unauthorized or chapter not found");
     }
 
     const lastChapter = await Chapter.findOne({
@@ -42,6 +48,87 @@ export default class ChapterServices {
     if (updateResult.modifiedCount === 0) {
       throw new ApiError(500, "Failed to update course with new chapter");
     }
+
+    return chapter;
+  }
+
+  static async updateChapterService(data: {
+    id: string;
+    courseId: string;
+    updates: Partial<IChapter>;
+    userId: string;
+  }) {
+    const chapter = await Chapter.findOne({
+      _id: data.id,
+      courseId: data.courseId,
+    });
+    if (!chapter) {
+      throw new ApiError(404, "Chapter not found or unauthorized");
+    }
+    Object.assign(chapter, data.updates);
+    await chapter.save();
+    logger.info(`Chapter updated: ${chapter.title}`);
+    return chapter;
+  }
+
+  static async getChapterByIdService({
+    id,
+    userId,
+  }: {
+    id: string;
+    userId: string;
+  }) {
+    if (!id) {
+      throw new ApiError(404, "ChapterId not found!!");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new ApiError(400, "Invalid chapter ID format");
+    }
+
+    const chapter = await Chapter.findOne({ _id: id }).populate("courseId");
+
+    if (
+      !chapter ||
+      !chapter.courseId ||
+      (chapter.courseId as any).authorId?.toString() !== userId
+    ) {
+      throw new ApiError(404, "Chapter not found or unauthorized");
+    }
+
+    logger.info(`Fetched chapter : ${chapter.title}`);
+    return chapter;
+  }
+
+  static async togglePublishChapterService({
+    authorId,
+    courseId,
+    chapterId,
+    publish
+  }: {
+    authorId: string;
+    courseId: string;
+    chapterId: string;
+    publish: boolean;
+  }) {
+    if (!authorId || !courseId || !chapterId)
+      throw new ApiError(400, "Missing required fields");
+
+    const course = await Course.findOne({
+      _id: new mongoose.Types.ObjectId(courseId),
+      authorId,
+    });
+    if (!course) throw new ApiError(404, "Course not found or unauthorized");
+
+    const chapter = await Chapter.findOne({
+      _id: new mongoose.Types.ObjectId(chapterId),
+      courseId,
+    });
+    if (!chapter) throw new ApiError(404, "Chapter not found or unauthorized");
+
+    // Update the chapter to published
+    chapter.isPublished = publish;
+    await chapter.save();
 
     return chapter;
   }

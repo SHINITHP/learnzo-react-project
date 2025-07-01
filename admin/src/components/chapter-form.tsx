@@ -80,8 +80,8 @@ const ChapterForm = ({ initialData }: ChapterFormProps) => {
     }
   };
 
-  const onEdit = (id: string) => {
-    navigate(`/courses/${id}/chapters/${id}`);
+  const onEdit = (chapterId: string) => {
+    navigate(`/courses/${id}/chapters/${chapterId}`);
   };
 
   return (

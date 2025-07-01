@@ -2,15 +2,15 @@ import type { AttachementUploadsProps } from "@/types";
 import { Pencil, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { MultiFileUpload } from "./multi-file-upload";
 import { getFileIcon, getMimeTypeFromName } from "./file-icon-resolver";
+import { MultiFileUpload } from "./multi-file-upload";
 
 const AttachmentForm = ({ initialData }: AttachementUploadsProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
 
   return (
-    <div className="mt-6 border bg-slate-100 dark:bg-slate-900 rounded-lg p-4">
+    <div className="mt-6 border bg-slate-100 dark:bg-slate-900 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         Course attachments
         <Button

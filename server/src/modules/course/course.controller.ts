@@ -105,5 +105,8 @@ export const updateCourse = async (
     
     logger.info(`course updated successfull: ${course}`);
     ApiResponse.success(res, "Course updated successfull", course, 200);
-  } catch (error) {}
+  } catch (error) {
+    logger.error("Error in [CourseCreation]:", error);
+    next(error);
+  }
 };

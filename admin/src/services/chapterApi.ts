@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "@/redux/store";
-import type { IChapter } from "@/types";
+import type { IChapter, IUpdateCoursePayload } from "@/types";
 
 export const chapterApi = createApi({
   reducerPath: "chapterApi",
@@ -29,6 +29,45 @@ export const chapterApi = createApi({
       ],
     }),
 
+    updateChapter: builder.mutation<
+      IChapter,
+      { id: string; courseId: string; updates: IUpdateCoursePayload }
+    >({
+      query: ({ id, courseId, updates }) => ({
+        url: `/${courseId}/${id}`,
+        method: "PUT",
+        body: updates,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Chapter", id }],
+    }),
+
+    togglePublish: builder.mutation<
+      { success: boolean; message: string; data: IChapter },
+      { chapterId: string; courseId: string; publish: boolean }
+    >({
+      query: ({ chapterId, courseId, publish }) => ({
+        url: `/${courseId}/${chapterId}/publish`,
+        method: "PATCH",
+        body: { publish },
+      }),
+      invalidatesTags: (result, error, { chapterId }) => [
+        { type: "Chapter", id: chapterId },
+      ],
+    }),
+
+    getChapterById: builder.query<
+      { success: boolean; message: string; data: IChapter },
+      { chapterId: string; courseId: string }
+    >({
+      query: ({ chapterId, courseId }) => ({
+        url: `/${courseId}/${chapterId}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, { chapterId }) => [
+        { type: "Chapter", id: chapterId },
+      ],
+    }),
+
     updateChapterPositions: builder.mutation<
       { success: boolean; message: string; data: IChapter[] },
       { courseId: string; list: { id: string; position: number }[] }
@@ -46,5 +85,10 @@ export const chapterApi = createApi({
   }),
 });
 
-export const { useCreateChapterMutation, useUpdateChapterPositionsMutation } =
-  chapterApi;
+export const {
+  useCreateChapterMutation,
+  useGetChapterByIdQuery,
+  useUpdateChapterPositionsMutation,
+  useUpdateChapterMutation,
+  useTogglePublishMutation,
+} = chapterApi;

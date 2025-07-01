@@ -45,7 +45,7 @@ const AddCourse = () => {
   };
  
   return (
-    <div className="h-[100%] dark:border-gray-800 rounded-2xl dark:bg-white/[0.03] flex flex-col justify-center items-center">
+    <div className="h-screen dark:border-gray-800 mt-16 rounded-2xl dark:bg-white/[0.03] flex flex-col justify-center items-center">
       <h1 className="text-4xl font-bold mb-5">Create Course</h1>
       <Form {...form}>
         <form

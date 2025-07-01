@@ -54,7 +54,7 @@ export const ChaptersList = ({ items, onReorder, onEdit }: ChaptersListProps) =>
                   <div
                     className={cn(
                       'flex items-center gap-x-2 dark:bg-white/[0.03] border dark:text-white rounded-md mb-4 text-sm',
-                      chapter.isPublished && 'bg-sky-100 border-sky-200 text-sky-700',
+                      chapter.isPublished && 'bg-sky-100 border-slate-700 text-sky-700',
                       snapshot.isDragging && 'bg-slate-300 dark:bg-slate-700 shadow-md'
                     )}
                     ref={provided.innerRef}
@@ -63,7 +63,7 @@ export const ChaptersList = ({ items, onReorder, onEdit }: ChaptersListProps) =>
                     <div
                       className={cn(
                         'px-2 py-3 border-r border-r-slate-800 hover:bg-slate-300 rounded-l-md transition cursor-grab active:cursor-grabbing',
-                        chapter.isPublished && 'border-r-sky-200 hover:bg-sky-200',
+                        chapter.isPublished && 'border-r-slate-700 hover:bg-sky-200',
                         snapshot.isDragging && 'bg-slate-300 dark:bg-slate-600'
                       )}
                       {...provided.dragHandleProps}

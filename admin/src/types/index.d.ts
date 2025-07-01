@@ -124,9 +124,20 @@ export interface IUpdateCoursePayload {
   description?: string;
   imageUrl?: string;
   price?: number;
+  isFree?: boolean;
+  videoUrl?: string;
   attachments?: string[];
   isPublished?: boolean;
   categoryId?: string;
+}
+
+export interface IUpdateChapterPayload {
+  title?: string;
+  description?: string;
+  videoUrl?: string;
+  position?: number;
+  isPublished?: boolean;
+  isFree?: boolean;
 }
 
 export interface ICategoryResponse {
@@ -154,7 +165,7 @@ export interface IChapter {
   videoUrl?: string;
   position: number;
   isPublished?: boolean;
-  isFree?: boolean;
+  isFree: boolean;
   muxData?: string;
   courseId: string;
   userProgress?: string[];

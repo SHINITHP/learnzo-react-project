@@ -3,18 +3,14 @@
 import {
   AlertCircleIcon,
   FileIcon,
+  Loader2,
   Trash2Icon,
   UploadIcon,
   XIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type DragEvent,
-} from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import type { AttachementUploadsProps, IAttachment } from "@/types";
 import { uploadToCloudinary } from "@/utils/cloudinary";
 import {
@@ -140,7 +136,7 @@ export const MultiFileUpload = ({ initialData }: AttachementUploadsProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-2 bg-slate-900 mt-5">
+    <div className="flex flex-col gap-2 bg-slate-900 mt-5 ">
       {/* Drop area */}
       <div
         onDragEnter={handleDragEnter}
@@ -149,7 +145,7 @@ export const MultiFileUpload = ({ initialData }: AttachementUploadsProps) => {
         onDrop={handleDrop}
         data-dragging={isDragging || undefined}
         data-files={attachments.length > 0 || undefined}
-        className="border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-56 flex-col items-center rounded-xl border border-dashed p-4 transition-colors not-data-[files]:justify-center has-[input:focus]:ring-[3px]"
+        className="border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex flex-col items-center rounded-xl border border-dashed p-4 transition-colors not-data-[files]:justify-center has-[input:focus]:ring-[3px]"
       >
         <input
           ref={inputRef}
@@ -161,7 +157,12 @@ export const MultiFileUpload = ({ initialData }: AttachementUploadsProps) => {
         />
 
         {attachments.length > 0 ? (
-          <div className="flex w-full flex-col gap-3">
+          <div className="relative flex w-full flex-col gap-3">
+            {isUploading && (
+              <div className="absolute h-full w-full bg-slate-500.20 top-0 right-0 rounded-m flex items-center justify-center">
+                <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
+              </div>
+            )}
             <div className="flex items-center justify-between gap-2">
               <h3 className="truncate text-sm font-medium">
                 Uploaded Attachments ({attachments.length})
@@ -184,7 +185,7 @@ export const MultiFileUpload = ({ initialData }: AttachementUploadsProps) => {
                   key={attachment._id}
                   className="dark:bg-white/[0.03] mt-3 flex items-center justify-between gap-2 rounded-lg border p-2 pe-3"
                 >
-                  <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="flex items-center gap-3 ">
                     <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded border">
                       {getFileIcon({
                         file: {

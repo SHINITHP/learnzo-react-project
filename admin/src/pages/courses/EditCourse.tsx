@@ -4,8 +4,8 @@ import { IconBadge } from "@/components/icon-badge";
 import ImageForm from "@/components/image-form";
 import PriceForm from "@/components/price-form";
 import TitleForm from "@/components/title-form";
-import { useGetCategoriesQuery } from "@/services/categoryApi";
-import { useGetCourseByIdQuery } from "@/services/courseApi";
+import { useLazyGetCategoriesQuery } from "@/services/categoryApi";
+import { useLazyGetCourseByIdQuery } from "@/services/courseApi";
 import {
   CircleDollarSign,
   File,
@@ -16,12 +16,21 @@ import { useParams } from "react-router-dom";
 import AttachmentForm from "@/components/attachment-form";
 import ChapterForm from "@/components/chapter-form";
 import PageMeta from "@/components/common/PageMeta";
+import { useEffect } from "react";
 
 const EditCourse = () => {
   //   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, error } = useGetCourseByIdQuery(id!);
-  const { data: categories } = useGetCategoriesQuery();
+  const [triggerGetCourse, { data, isLoading, error }] =
+    useLazyGetCourseByIdQuery();
+  const [triggerGetCategories, { data: categories }] =
+    useLazyGetCategoriesQuery();
+
+  useEffect(() => {
+    // Call once when component mounts
+    triggerGetCourse(id!);
+    triggerGetCategories();
+  }, []);
 
   if (isLoading) {
     return (
@@ -50,10 +59,9 @@ const EditCourse = () => {
         title="LearnEase Admin Panel"
         description="LearnEase admin edit course page"
       />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-screen rounded-2xl md:border border-gray-200 md:bg-white px-2 py-5 md:px-5 md:py-7 md:dark:border-gray-800 md:dark:bg-white/[0.03] xl:px-5 xl:py-8">
+      <div className="grid mt-16 grid-cols-1 lg:grid-cols-2 gap-6 rounded-2xl md:border border-gray-200 md:bg-white px-2 py-5 md:px-5 md:py-7 md:dark:border-gray-800 md:dark:bg-white/[0.03] xl:px-5 xl:py-8">
         <div>
-          <div className="flex items-center gap-x-2">
+          <div className="flex  items-center gap-x-2">
             <IconBadge icon={LayoutDashboard} size="default" />
             <h1 className="text-lg">Customize your course</h1>
           </div>
@@ -73,6 +81,13 @@ const EditCourse = () => {
               value: cat._id,
             }))}
           />
+          <div>
+            <div className="flex items-center gap-x-2 mt-10">
+              <IconBadge icon={CircleDollarSign} />
+              <h2 className="text-xl">Sell your course</h2>
+            </div>
+            <PriceForm initialData={{ price: data.data?.price || 0 }} />
+          </div>
         </div>
         <div className="space-y-6">
           <div>
@@ -80,15 +95,7 @@ const EditCourse = () => {
               <IconBadge icon={ListChecks} />
               <h2 className="text-xl">Course Chapters</h2>
             </div>
-            <ChapterForm initialData={{ chapters: data.data.chapters}} />
-          </div>
-
-          <div>
-            <div className="flex items-center gap-x-2">
-              <IconBadge icon={CircleDollarSign} />
-              <h2 className="text-xl">Sell your course</h2>
-            </div>
-            <PriceForm initialData={{ price: data.data?.price || 0 }} />
+            <ChapterForm initialData={{ chapters: data.data.chapters }} />
           </div>
 
           <div>
