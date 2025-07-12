@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import logger from "../utils/logger";
 
 export interface AuthRequest extends Request {
   user?: { id: string; email: string; };
@@ -13,6 +14,7 @@ export const authMiddleware = (
   const authHeader = req.headers.authorization || req.headers.Authorization;
   // Ensure authHeader is a string
   if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith("Bearer ")) {
+    logger.error("Unauthorized access attempt: No token provided or invalid format");
     res.status(401).json({ message: "Unauthorized: No token provided" });
     return
   }
@@ -22,7 +24,6 @@ export const authMiddleware = (
     res.status(401).json({ message: "Unauthorized: No token" });
     return;
   }
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       userId: string;
@@ -31,7 +32,8 @@ export const authMiddleware = (
 
     req.user = { id: decoded.userId, email: decoded.email };
     next();
-  } catch (err) {
+  } catch (err: any) {
+    console.log(err)
     res.status(403).json({ message: "Invalid or expired token" });
   }
 };

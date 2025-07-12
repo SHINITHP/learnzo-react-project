@@ -106,6 +106,7 @@ const TitleForm = ({ initialData }: TitleFormProps) => {
           </form>
         </Form>
       )}
+      {!initialData.title && "No Title"}
     </div>
   );
 };

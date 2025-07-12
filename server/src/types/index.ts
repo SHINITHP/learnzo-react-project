@@ -28,6 +28,9 @@ export interface ICourse extends Document {
   isPublished: boolean;
   categoryId?: Types.ObjectId;
   chapters: Types.ObjectId[];
+  outcomes: string[];
+  languages: String[];
+  hours: string;
   attachments: Types.ObjectId[];
   purchases: Types.ObjectId[];
   createdAt: Date;

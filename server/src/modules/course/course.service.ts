@@ -1,8 +1,9 @@
 import { Attachment, Course, Purchase } from "./course.model";
 import logger from "../../utils/logger";
-import { ICourse } from "../../types";
+import { IChapter, ICourse } from "../../types";
 import ApiError from "../../utils/apiError";
 import { Chapter } from "../chapter/chapter.model";
+import mongoose from "mongoose";
 
 class CourseService {
   static async createCourseService(courseData: {
@@ -33,6 +34,43 @@ class CourseService {
     return attachmentIds;
   }
 
+  static async togglePublishChapterService({
+    authorId,
+    id,
+    publish,
+  }: {
+    authorId: string;
+    id: string;
+    publish: boolean;
+  }) {
+    if (!authorId || !id) throw new ApiError(400, "Missing required fields");
+
+    const course = await Course.findOne({
+      _id: new mongoose.Types.ObjectId(id),
+      authorId,
+    }).populate<{ chapters: IChapter[] }>("chapters");
+    if (!course) throw new ApiError(404, "Course not found or unauthorized");
+
+    const hasPublishedChapter = course.chapters.some(
+      (chapter) => chapter.isPublished
+    );
+
+    if (
+      !course.title ||
+      !course.description ||
+      !course.imageUrl ||
+      !course.categoryId ||
+      !hasPublishedChapter
+    )
+      throw new ApiError(401, "Missing required fields");
+
+    // Update the chapter to published
+    course.isPublished = publish;
+    await course.save();
+
+    return course;
+  }
+
   static async getCourseByIdService(data: { id: string; userId: string }) {
     const course = await Course.findOne({ _id: data.id, authorId: data.userId })
       .populate("attachments")
@@ -41,6 +79,20 @@ class CourseService {
     if (!course) throw new ApiError(404, "Course not found or unauthorized");
 
     logger.info(`Fetched course: ${course.title}`);
+    return course;
+  }
+
+  static async getCoursesService() {
+    const course = await Course.find({ isPublished: true })
+      .populate({
+        path: "chapters",
+        match: { isPublished: true },
+      })
+      .populate("attachments")
+      .lean();
+
+    if (!course) throw new ApiError(404, "No courses found");
+
     return course;
   }
 

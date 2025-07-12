@@ -64,6 +64,11 @@ export interface DescriptionFormProps {
     description?: string;
   };
 }
+export interface LearningOutcomesFormProps {
+  initialData: {
+    outcomes?: string[];
+  };
+}
 
 export interface ImageFormProps {
   initialData: {
@@ -111,6 +116,9 @@ export interface ICourse {
     isPublished: boolean;
     categoryId?: string;
     category?: ICategory;
+    outcomes?: [];
+    languages?: string[];
+    hours?: string;
     chapters: IChapter[];
     attachments: IAttachment[];
     purchases: string[];
@@ -127,8 +135,11 @@ export interface IUpdateCoursePayload {
   isFree?: boolean;
   videoUrl?: string;
   attachments?: string[];
+  hours?: string;
   isPublished?: boolean;
+  languages?: string[];
   categoryId?: string;
+  outcomes?: string[];
 }
 
 export interface IUpdateChapterPayload {

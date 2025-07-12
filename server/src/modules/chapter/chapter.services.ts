@@ -104,7 +104,7 @@ export default class ChapterServices {
     authorId,
     courseId,
     chapterId,
-    publish
+    publish,
   }: {
     authorId: string;
     courseId: string;
@@ -129,6 +129,21 @@ export default class ChapterServices {
     // Update the chapter to published
     chapter.isPublished = publish;
     await chapter.save();
+
+    if (!publish) {
+      const publishedChapterInCourse = await Chapter.find({
+        courseId,
+        isPublished: true,
+      });
+
+      if (!publishedChapterInCourse.length) {
+        await Course.updateOne(
+          { _id: courseId },
+          { $set: { isPublished: false } }
+        );
+
+      }
+    }
 
     return chapter;
   }

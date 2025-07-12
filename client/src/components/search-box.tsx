@@ -32,13 +32,13 @@ export default function SearchBox() {
         </div>
         <Input
           type="search"
-          className="block w-full h-12 ps-10 text-sm text-gray-900 border border-gray-300 rounded-4xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500 "
+          className="block w-full h-12 ps-10 text-sm text-gray-900 border rounded-3xl border-gray-300 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 "
           placeholder="Search Mockups, Logos..."
           required
         />
         <button
           type="submit"
-          className=" text-lg text-[#2F4021] font-medium cursor-pointer transition-all duration-300 ease-in-out absolute h-full right-0 top-0 w-28 bg-[#AFD275] focus:ring-4 focus:outline-none rounded-4xl focus:ring-blue-300 px-4 py-2 "
+          className=" text-lg text-[#2F4021] font-medium cursor-pointer transition-all duration-300 ease-in-out absolute h-full right-0 top-0 w-28 bg-[#AFD275] focus:ring-4 focus:outline-none rounded-3xl focus:ring-blue-300 px-4 py-2 "
         >
           Search
         </button>

@@ -7,9 +7,9 @@ import { ScrollToTop } from "@/components/common/ScrollToTop";
 import SignIn from "./pages/SignIn";
 import AuthCheck from "./hooks/AuthCheck";
 import RequireAuth from "./components/common/RequiredAuth";
-import AddCourse from "./pages/courses/AddCourse";
-import EditCourse from "./pages/courses/EditCourse";
-import AddChapter from "./pages/courses/AddChapter";
+import AddCourse from "./pages/AddCourse";
+import EditCourse from "./pages/EditCourse";
+import AddChapter from "./pages/AddChapter";
 
 function App() {
   return (

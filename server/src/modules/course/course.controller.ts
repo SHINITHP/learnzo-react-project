@@ -28,6 +28,38 @@ export const createCourse = async (
   }
 };
 
+export const publishChapter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    logger.info(
+      `Received Chapter updation request: ${JSON.stringify(req.params.id)} ${
+        (req as any).user.id
+      }`
+    );
+
+    const { id } = req.params;
+    const authorId = (req as any).user.id;
+    const { publish } = req.body;
+
+    const course = await CourseService.togglePublishChapterService({
+      id,
+      authorId,
+      publish
+    });
+
+    logger.info(`Course successfully ${publish? "published" : "unpublished"}: ${course.title}`);
+    ApiResponse.success(res, `Course ${publish? "published" : "unpublished"} successful`, course, 200);
+    
+  } catch (error) {
+    logger.error("Error in [CoursePublish]:", error);
+    next(error);
+  }
+};
+
+
 export const createAttachments = async (
   req: Request,
   res: Response,
@@ -71,10 +103,31 @@ export const getCourseById = async (
     logger.info(`Received fetch request : ${JSON.stringify(req.body)}`);
 
     const { id } = req.params;
+    console.log(id)
     const userId = (req as any).user.id;
 
     const course = await CourseService.getCourseByIdService({ id, userId });
     logger.info(`Course fetched successful: ${course.title}`);
+
+    ApiResponse.success(res, "Course Fetched successfull", course, 200);
+  } catch (error) {
+    logger.error("Error in [CourseGetByID]:", error);
+    next(error);
+  }
+};
+
+export const getCourses = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    logger.info(`Received fetch request : ${JSON.stringify(req.body)}`);
+
+    const userId = (req as any).user.id;
+
+    const course = await CourseService.getCoursesService();
+    logger.info(`Fetched course: ${course.length} courses found`);
 
     ApiResponse.success(res, "Course Fetched successfull", course, 200);
   } catch (error) {

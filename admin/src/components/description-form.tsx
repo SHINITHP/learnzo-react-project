@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form";
 import { Button } from "./ui/button";
 import { Pencil } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
-import { Textarea } from "./ui/textarea";
-import { cn } from "@/utils/cn";
+import RichTextEditor from "./RichTextEditor";
+import { cn } from "@/lib/utils";
 import { useParams } from "react-router-dom";
 import { useUpdateCourseMutation } from "@/services/courseApi";
 import toast from "react-hot-toast";
@@ -15,7 +15,16 @@ import toast from "react-hot-toast";
 const formSchema = z.object({
   description: z.string().min(1, {
     message: "Description is required",
-  }),
+  }).refine(
+    (value) => {
+      // Remove HTML tags and check if there's actual text content
+      const textContent = value.replace(/<[^>]*>/g, '').trim();
+      return textContent.length > 0;
+    },
+    {
+      message: 'Description cannot be empty'
+    }
+  ),
 });
 
 const DescriptionForm = ({ initialData }: DescriptionFormProps) => {
@@ -28,7 +37,7 @@ const DescriptionForm = ({ initialData }: DescriptionFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: initialData.description,
+      description: initialData.description || '',
     },
   });
   const { isSubmitting, isValid } = form.formState;
@@ -39,12 +48,19 @@ const DescriptionForm = ({ initialData }: DescriptionFormProps) => {
         id: id!,
         updates: { description: values.description },
       }).unwrap();
-      toast.success(`Title updated successfull`);
+      toast.success(`Description updated successfully`);
       toggleEdit();
     } catch (error: any) {
-      toast.error(`Title update error! : ${error}`);
+      toast.error(`Description update error! : ${error}`);
     }
   };
+
+  // Function to render HTML content safely
+  const renderDescription = (htmlContent: string) => {
+    if (!htmlContent) return "No description";
+    return <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="prose prose-sm max-w-none" />;
+  };
+
   return (
     <div className="mt-6 border bg-slate-100 dark:bg-slate-900 rounded-lg pt-2 pb-4 pl-3 pr-2">
       <div className="font-medium flex items-center justify-between">
@@ -61,14 +77,14 @@ const DescriptionForm = ({ initialData }: DescriptionFormProps) => {
         </Button>
       </div>
       {!isEditing && (
-        <p
+        <div
           className={cn(
             "text-sm mt-2",
             !initialData.description && "text-slate-500 italic"
           )}
         >
-          {initialData.description || "No description"}
-        </p>
+          {initialData.description ? renderDescription(initialData.description) : "No description"}
+        </div>
       )}
       {isEditing && (
         <Form {...form}>
@@ -78,16 +94,18 @@ const DescriptionForm = ({ initialData }: DescriptionFormProps) => {
           >
             <FormField
               control={form.control}
-              name="description"                  
-
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea
-                      className="dark:bg-white/[0.03] border"
-                      disabled={isSubmitting}
+                    <RichTextEditor
+                      content={field.value}
+                      onChange={field.onChange}
                       placeholder="e.g. 'This course is about...'"
-                      {...field}
+                      className={cn(
+                        "dark:bg-white/[0.03]",
+                        form.formState.errors.description && "border-red-500"
+                      )}
                     />
                   </FormControl>
                   <FormMessage />

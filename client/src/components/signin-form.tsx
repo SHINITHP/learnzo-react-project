@@ -31,7 +31,7 @@ const formSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters" }),
 });
 
-const LoginForm = () => {
+const SignForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -57,7 +57,6 @@ const LoginForm = () => {
       navigate("/");
 
       toast.success("Sign-in successfull");
-
     } catch (error: any) {
       console.log(error);
       toast.error(error.data?.message);
@@ -65,9 +64,12 @@ const LoginForm = () => {
   };
 
   return (
-    <>
+  <div className="flex flex-col items-center justify-center w-full h-full">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-1">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-1 w-full"
+        >
           <FormField
             control={form.control}
             name="email"
@@ -123,12 +125,14 @@ const LoginForm = () => {
               </FormItem>
             )}
           />
-          <Button
-            type="submit"
-            className="text-lg w-full h-13 rounded-sm text-white cursor-pointer bg-[#2F4021] hover:bg-[#2f4021f4] mt-10"
-          >
-            Sign In
-          </Button>
+          <div>
+            <Button
+              type="submit"
+              className="text-lg w-full mt-10 h-12 rounded-sm text-white cursor-pointer bg-[#2F4021] hover:bg-[#2f4021f4]"
+            >
+              Sign In
+            </Button>
+          </div>
         </form>
       </Form>
 
@@ -155,8 +159,8 @@ const LoginForm = () => {
           Sign-up
         </span>
       </p>
-    </>
+    </div>
   );
 };
 
-export default LoginForm;
+export default SignForm;

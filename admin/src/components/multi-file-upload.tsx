@@ -136,7 +136,7 @@ export const MultiFileUpload = ({ initialData }: AttachementUploadsProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-2 bg-slate-900 mt-5 ">
+    <div className="flex flex-col gap-2 dark:bg-slate-900 mt-5 ">
       {/* Drop area */}
       <div
         onDragEnter={handleDragEnter}
@@ -163,7 +163,7 @@ export const MultiFileUpload = ({ initialData }: AttachementUploadsProps) => {
                 <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
               </div>
             )}
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2 ">
               <h3 className="truncate text-sm font-medium">
                 Uploaded Attachments ({attachments.length})
               </h3>

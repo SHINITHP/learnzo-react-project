@@ -5,11 +5,11 @@ import AppFooter from "./AppFooter"
 
 const LayoutContent: React.FC = () => {
     return (
-        <div className="min-h-screen w-screen bg-[#ffffff] text-black">
+        <div className="min-h-screen bg-[#ffffff] text-black">
             <div>
                 <AppHeader />
             </div>
-            <div className="">
+            <div>
                 <Outlet />
             </div>
             <div>

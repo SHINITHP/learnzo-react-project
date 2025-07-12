@@ -72,7 +72,7 @@ const AddChapter = () => {
       <div className="mt-16 rounded-2xl md:border border-gray-200 md:bg-white md:dark:border-gray-800 md:dark:bg-white/[0.03]">
         {!chapter?.isPublished && (
           <Banner
-            className="text-red-700 mt-6"
+            className="bg-amber-200 text-amber-900 mt-6"
             variant="warning"
             label="This chapter is unpublished. It will not be visible in the course."
           />

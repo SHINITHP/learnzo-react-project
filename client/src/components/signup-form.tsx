@@ -18,6 +18,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
 import { useState } from "react";
 import { useSignUpMutation } from "@/services/authApi";
+import toast from "react-hot-toast";
 
 const formSchema = z
   .object({
@@ -68,9 +69,11 @@ const RegisterForm = () => {
       // Store token and email for verification
       localStorage.setItem("otpToken", data.token);
       localStorage.setItem("otpEmail", data.email);
+      toast.success(response.message);
       navigate(`/?authMode=verify-otp`);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      toast.error(error.data?.message);
     }
   };
 

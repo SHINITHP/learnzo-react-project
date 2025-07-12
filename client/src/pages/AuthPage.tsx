@@ -4,10 +4,10 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import LoginForm from "@/components/signin-form";
 import RegisterForm from "@/components/signup-form";
 import ForgotPassword from "@/components/forgot-password";
 import OtpForm from "@/components/otp-form";
+import SignForm from "@/components/signin-form";
 
 interface AuthModalProps {
   authMode: string;
@@ -18,7 +18,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ authMode, onClose }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
+    <div className="fixed z-50 inset-0 bg-black/80 flex items-center justify-center">
       <AnimatePresence>
         <motion.div
           initial={{ y: "-100vh", opacity: 0 }} // Slide in from left
@@ -55,8 +55,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ authMode, onClose }) => {
           )}
 
           {/* sign-in form */}
-          <div className="p-7 sm:p-13 w-full">
-            {authMode === "sign-in" && <LoginForm />}
+          <div className="p-7 sm:p-13 w-full h-full">
+            {authMode === "sign-in" && <SignForm />}
 
             {/* sign-up form */}
             {authMode === "sign-up" && <RegisterForm />}

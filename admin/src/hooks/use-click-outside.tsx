@@ -1,19 +1,32 @@
 import { useEffect } from "react";
 
-export const useClickOutside = (refs, callback) => {
-    useEffect(() => {
-        const handleOutsideClick = (event) => {
-            const isOutside = refs.every((ref) => !ref?.current?.contains(event.target));
+export const useClickOutside = (
+  refs: (React.RefObject<HTMLElement> | React.RefObject<HTMLElement | null>)[],
+  callback: (event: MouseEvent) => void,
+  options: { dialogOpen?: boolean; excludeSelector?: string } = {}
+) => {
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      console.log("dialogOpen:", options.dialogOpen); // Debug log
+      if (options.dialogOpen || typeof callback !== "function") return;
 
-            if (isOutside && typeof callback === "function") {
-                callback(event);
-            }
-        };
+      const isOutside = refs.every((ref) => {
+        const current = ref.current;
+        return !current || !current.contains(event.target as Node);
+      });
+      const isExcluded = options.excludeSelector
+        ? !(event.target as Element).closest(options.excludeSelector)
+        : true;
 
-        window.addEventListener("mousedown", handleOutsideClick);
+      if (isOutside && isExcluded) {
+        callback(event);
+      }
+    };
 
-        return () => {
-            window.removeEventListener("mousedown", handleOutsideClick);
-        };
-    }, [callback, refs]);
+    window.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      window.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [callback, refs, options.dialogOpen, options.excludeSelector]);
 };

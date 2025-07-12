@@ -7,8 +7,11 @@ dotenv.config();
 
 import userRoutes from './modules/user/user.routes';
 import adminRoutes from './modules/admin/admin.routes';
-import courseRoutes from './modules/course/course.routes';
+import adminCourseRoutes from './modules/course/admin.course.routes';
+import userCourseRoute from './modules/course/user.course.routes';
+import courseRoutes from './modules/course/admin.course.routes';
 import categoryRoutes from './modules/category/category.route';
+import userCategoryRoutes from './modules/category/user.category.route';
 import chapterRoutes from './modules/chapter/chapter.route';
 import { errorHandler } from "./middleware/errorHandler";
 import cookieParser from "cookie-parser";
@@ -38,8 +41,10 @@ app.use((req, res, next) => {
 // Routes
 app.use("/api/auth", userRoutes);
 app.use("/api/admin/auth", adminRoutes);
-app.use("/api/admin/courses", courseRoutes);
+app.use("/api/admin/courses", adminCourseRoutes);
+app.use("/api/user/courses", userCourseRoute);
 app.use("/api/admin/categories", categoryRoutes);
+app.use("/api/user/categories", userCategoryRoutes);
 app.use("/api/admin/chapter", chapterRoutes);
 
 //Error handling

@@ -10,7 +10,16 @@ export interface IVerifyOTPRequest {
   token: string;
 }
 
-export interface IVerifyOTPResponse{
+export interface ICategoryResponse {
+  success: boolean;
+  message: string;
+  data: {
+    _id: string;
+    name: string;
+  }[];
+}
+
+export interface IVerifyOTPResponse {
   success: boolean;
   message: string;
   data: any;
@@ -28,13 +37,36 @@ export interface ISignUpResponse {
   success: boolean;
   message: string;
   data: {
-    user: {
-      email: string;
-      userId: string;
-    };
+    email: string;
     token: string;
   };
 }
+
+export interface ICourse {
+  _id: string;
+  authorId: string;
+  categoryId?: string;
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  price?: number;
+  isPublished: boolean;
+  chapters?: any[];
+  outcomes?: string[];
+  languages?: string[];
+  hours?: string;
+  attachments?: any[];
+  purchases?: any[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CourseResponse {
+  success: boolean;
+  message: string;
+  data: ICourse[];
+}
+
 
 export interface ISignUpRequest {
   fullName: string;

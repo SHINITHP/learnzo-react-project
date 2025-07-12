@@ -5,11 +5,11 @@ import { Sidebar } from "@/layouts/sidebar";
 import { Header } from "@/layouts/header";
 import { cn } from "@/utils/cn";
 import { useEffect, useRef, useState } from "react";
-import { Banner } from "@/components/banner";
 
 const Layout: React.FC = () => {
   const isDesktopDevice = useMediaQuery("(min-width: 768px)");
   const [collapsed, setCollapsed] = useState(!isDesktopDevice);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const sidebarRef = useRef<HTMLDivElement | null>(null);
 
@@ -17,11 +17,15 @@ const Layout: React.FC = () => {
     setCollapsed(!isDesktopDevice);
   }, [isDesktopDevice]);
 
-  useClickOutside([sidebarRef], () => {
-    if (!isDesktopDevice && !collapsed) {
-      setCollapsed(true);
-    }
-  });
+  useClickOutside(
+    [sidebarRef],
+    () => {
+      if (!isDesktopDevice && !collapsed) {
+        setCollapsed(true);
+      }
+    },
+    { dialogOpen }
+  );
 
   return (
     <div className="min-h-screen bg-slate-100 transition-colors dark:bg-slate-900">
@@ -41,7 +45,7 @@ const Layout: React.FC = () => {
       >
         <Header collapsed={collapsed} setCollapsed={setCollapsed} />
         <div className="p-3 md:p-6 dark:bg-slate-900">
-          <Outlet />
+          <Outlet context={{ setDialogOpen }} />
         </div>
       </div>
     </div>

@@ -38,8 +38,9 @@ const AddCourse = () => {
     try {
       const response = await createCourse({ title: values.title }).unwrap();
       toast.success(`Course created successfully!`);
-      navigate(`/courses/${response.data._id}/edit`);
+      navigate(`/courses/${response.data._id}`);
     } catch (error: any) {
+      console.log(error)
       toast.error(`Create course! : ${error}`);
     }
   };

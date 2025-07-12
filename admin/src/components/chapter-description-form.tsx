@@ -7,11 +7,9 @@ import { Pencil } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { Textarea } from "./ui/textarea";
 import { cn } from "@/utils/cn";
-import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useUpdateChapterMutation } from "@/services/chapterApi";
-
-
+import RichTextEditor from "./RichTextEditor";
 
 interface ChapterDescriptionFormProps {
   initialData: {
@@ -27,7 +25,11 @@ const formSchema = z.object({
   }),
 });
 
-const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: ChapterDescriptionFormProps) => {
+const ChapterDescriptionForm = ({
+  initialData,
+  courseId,
+  chapterId,
+}: ChapterDescriptionFormProps) => {
   const [updateChapter, { isLoading }] = useUpdateChapterMutation();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -39,6 +41,18 @@ const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: ChapterDes
       description: initialData.description,
     },
   });
+
+  // Function to render HTML content safely
+  const renderDescription = (htmlContent: string) => {
+    if (!htmlContent) return "No description";
+    return (
+      <div
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
+        className="prose prose-sm max-w-none"
+      />
+    );
+  };
+
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -48,7 +62,7 @@ const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: ChapterDes
         courseId: courseId,
         updates: { description: values.description },
       }).unwrap();
-      toast.success(`Title updated successfull`);
+      toast.success(`Description updated successfull`);
       toggleEdit();
     } catch (error: any) {
       toast.error(`Title update error! : ${error}`);
@@ -58,7 +72,11 @@ const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: ChapterDes
     <div className="mt-6 border bg-slate-100 dark:bg-slate-900 rounded-lg pt-2 pb-4 pl-3 pr-2">
       <div className="font-medium flex items-center justify-between">
         Course description
-        <Button className="text-xs sm:text-sm" onClick={toggleEdit} variant={"ghost"}>
+        <Button
+          className="text-xs sm:text-sm"
+          onClick={toggleEdit}
+          variant={"ghost"}
+        >
           {isEditing ? (
             <>Cancel</>
           ) : (
@@ -76,7 +94,7 @@ const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: ChapterDes
             !initialData.description && "text-slate-500 italic"
           )}
         >
-          {initialData.description || "No description"}
+          {initialData.description ? renderDescription(initialData.description) : "No description"}
         </p>
       )}
       {isEditing && (
@@ -87,16 +105,18 @@ const ChapterDescriptionForm = ({ initialData, courseId, chapterId }: ChapterDes
           >
             <FormField
               control={form.control}
-              name="description"                  
-
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea
-                      className="dark:bg-white/[0.03] border"
-                      disabled={isSubmitting}
+                    <RichTextEditor
+                      content={field.value}
+                      onChange={field.onChange}
                       placeholder="e.g. 'This course is about...'"
-                      {...field}
+                      className={cn(
+                        "dark:bg-white/[0.03]",
+                        form.formState.errors.description && "border-red-500"
+                      )}
                     />
                   </FormControl>
                   <FormMessage />

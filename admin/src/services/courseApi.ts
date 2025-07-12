@@ -45,7 +45,21 @@ export const courseApi = createApi({
 
     getCourseById: builder.query<ICourse, string>({
       query: (id) => `/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Course', id }],
+      providesTags: (result, error, id) => [{ type: "Course", id }],
+    }),
+
+    togglePublish: builder.mutation<
+      ICourse,
+      { id: string; publish: boolean }
+    >({
+      query: ({ id, publish }) => ({
+        url: `/${id}/publish`,
+        method: "PATCH",
+        body: { publish },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Course", id: id },
+      ],
     }),
 
     updateCourse: builder.mutation<
@@ -68,4 +82,5 @@ export const {
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useCreateAttachmentsMutation,
+  useTogglePublishMutation,
 } = courseApi;
