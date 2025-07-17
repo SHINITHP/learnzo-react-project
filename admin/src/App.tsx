@@ -10,6 +10,7 @@ import RequireAuth from "./components/common/RequiredAuth";
 import AddCourse from "./pages/AddCourse";
 import EditCourse from "./pages/EditCourse";
 import AddChapter from "./pages/AddChapter";
+import CoursesList from "./pages/CoursesList";
 
 function App() {
   return (
@@ -51,7 +52,7 @@ function App() {
             />
             <Route
               path="courses"
-              element={<h1 className="title">Products</h1>}
+              element={<CoursesList />}
             />
             <Route path="courses/:id" element={<EditCourse />} />
             <Route path="courses/:id/chapters/:chapterId" element={<AddChapter />} />

@@ -1,5 +1,5 @@
 import type { AttachementUploadsProps } from "@/types";
-import { Pencil, PlusCircle } from "lucide-react";
+import { Loader2, Pencil, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { getFileIcon, getMimeTypeFromName } from "./file-icon-resolver";
@@ -8,9 +8,15 @@ import { MultiFileUpload } from "./multi-file-upload";
 const AttachmentForm = ({ initialData }: AttachementUploadsProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className="mt-6 border bg-slate-100 dark:bg-slate-900 rounded-md p-4">
+      {isLoading && (
+        <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-md flex items-center justify-center">
+          <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
+        </div>
+      )}
       <div className="font-medium flex items-center justify-between">
         Course attachments
         <Button
@@ -71,6 +77,7 @@ const AttachmentForm = ({ initialData }: AttachementUploadsProps) => {
 
       {isEditing && (
         <MultiFileUpload
+          setLoading={setIsLoading}
           initialData={{ attachments: initialData.attachments || [] }}
         />
       )}

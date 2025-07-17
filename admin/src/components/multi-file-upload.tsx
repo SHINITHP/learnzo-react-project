@@ -24,11 +24,19 @@ import {
   getMimeTypeFromName,
 } from "@/components/file-icon-resolver";
 
-export const MultiFileUpload = ({ initialData }: AttachementUploadsProps) => {
+type MultiFileUploadProps = {
+  initialData: AttachementUploadsProps["initialData"];
+  setLoading: (loading: boolean) => void;
+};
+
+export const MultiFileUpload = ({
+  initialData,
+  setLoading,
+}: MultiFileUploadProps) => {
   const maxSize = 10 * 1024 * 1024; // 10MB default
   const maxFiles = 10;
   const { id } = useParams<{ id: string }>();
-  const [updateCourse, { isLoading }] = useUpdateCourseMutation();
+  const [updateCourse] = useUpdateCourseMutation();
   const [attachments, setAttachments] = useState<IAttachment[]>(
     initialData.attachments || []
   );

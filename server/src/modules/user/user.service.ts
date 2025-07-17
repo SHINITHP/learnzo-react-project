@@ -1,6 +1,6 @@
 import { ISignInData, ISignUpData, IVerifyOTP } from "../../types";
 import ApiError from "../../utils/apiError";
-import { generateToken } from "../../utils/generateToken";
+import { generateToken, verifyJWTToken } from "../../utils/generateToken";
 import logger from "../../utils/logger";
 import {
   createOTPToken,
@@ -10,6 +10,7 @@ import {
 } from "../../utils/otp";
 import RefreshToken from "./refreshToken.model";
 import { User } from "./user.model";
+import jwt from 'jsonwebtoken';
 
 class AuthService {
   static async signUp(data: ISignUpData) {
@@ -31,6 +32,38 @@ class AuthService {
 
     return { email, token };
   }
+
+  static async refreshToken(refreshToken: string) {
+      try {
+        if (!refreshToken) {
+          throw new ApiError(403, "No refresh token provided.");
+        }
+  
+        const decoded = jwt.decode(refreshToken) as jwt.JwtPayload | null;
+  
+        if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
+          throw new ApiError(403, "Refresh token expired.");
+        }
+  
+        const admin = verifyJWTToken(refreshToken);
+        logger.info(`user :: ${admin}`);
+        if (!admin) {
+          throw new ApiError(403, "Invalid refresh token.");
+        }
+  
+        const { accessToken } = await generateToken({
+          userId: admin.userId,
+          email: admin.email,
+        });
+  
+        logger.info(`New access token generated for user: ${admin.userId}`);
+  
+        return { token: accessToken, admin };
+      } catch (error: any) {
+        logger.error(`Refresh token error: ${error.message}`);
+        throw new ApiError(403, "Invalid or expired refresh token.");
+      }
+    }
 
   static async verifyOTP(data: IVerifyOTP) {
     const { email: verifiedEmail } = verifyOTPToken(data.token, data.otp);
@@ -79,6 +112,11 @@ class AuthService {
     if (!user) {
       logger.warn(`Login failed - User not found: ${email}`);
       throw new ApiError(400, "User not Found.");
+    }
+
+    if(user.role !== "student"){
+      logger.warn(`Login failed - Access denied for non-student user: ${email}`);
+      throw new ApiError(400, "Access denied for non-student user.");
     }
 
     //compare hashed password

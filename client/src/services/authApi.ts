@@ -41,8 +41,15 @@ export const authApi = createApi({
         body: data,
       }),
     }),
+    refreshToken: builder.mutation<ISignInResponse, void>({
+      query: () => ({
+        url: "refreshToken",
+        method: "POST",
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
-export const { useSignInMutation, useSignUpMutation, useVerifyOTPMutation } =
+export const { useSignInMutation, useRefreshTokenMutation, useSignUpMutation, useVerifyOTPMutation } =
   authApi;

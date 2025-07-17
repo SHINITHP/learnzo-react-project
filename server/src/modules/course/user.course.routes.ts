@@ -2,12 +2,12 @@ import express from "express";
 import {
   getCourseById,
   getCourses,
-} from "./course.controller";
+} from "./user.course.controller";
 import { authMiddleware } from "../../middleware/auth";
 
 const router = express.Router();
 
-router.get("/", authMiddleware, getCourses);
-router.get("/:id", authMiddleware, getCourseById);
+router.get("/",  getCourses);
+router.get("/:id", getCourseById);
 
 export default router;

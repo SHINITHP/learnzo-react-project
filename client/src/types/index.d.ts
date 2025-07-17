@@ -67,6 +67,12 @@ export interface CourseResponse {
   data: ICourse[];
 }
 
+export interface CourseByIdResponse {
+  success: boolean;
+  message: string;
+  data: ICourse;
+}
+
 
 export interface ISignUpRequest {
   fullName: string;

@@ -1,5 +1,5 @@
 import type { RootState } from "@/redux/store";
-import type { CourseResponse, ICategoryResponse } from "@/types";
+import type { CourseByIdResponse, CourseResponse, ICategoryResponse } from "@/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const courseApi = createApi({
@@ -21,7 +21,7 @@ export const courseApi = createApi({
       providesTags: ["Course"],
     }),
 
-    getCourseById: builder.query<CourseResponse, string>({
+    getCourseById: builder.query<CourseByIdResponse, string>({
       query: (id) => `/${id}`,
       providesTags: (result, error, id) => [{ type: "Course", id }],
     }),

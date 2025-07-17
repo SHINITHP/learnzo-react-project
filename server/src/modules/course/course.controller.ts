@@ -103,7 +103,6 @@ export const getCourseById = async (
     logger.info(`Received fetch request : ${JSON.stringify(req.body)}`);
 
     const { id } = req.params;
-    console.log(id)
     const userId = (req as any).user.id;
 
     const course = await CourseService.getCourseByIdService({ id, userId });
@@ -123,8 +122,6 @@ export const getCourses = async (
 ) => {
   try {
     logger.info(`Received fetch request : ${JSON.stringify(req.body)}`);
-
-    const userId = (req as any).user.id;
 
     const course = await CourseService.getCoursesService();
     logger.info(`Fetched course: ${course.length} courses found`);

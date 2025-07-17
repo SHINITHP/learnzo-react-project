@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import logger from "../../utils/logger";
 import AuthService from "./user.service";
 import ApiResponse from "../../utils/apiResponse";
+import ApiError from "../../utils/apiError";
 
 export const signUpUser = async (
   req: Request,
@@ -86,4 +87,23 @@ export const signInUser = async (
     logger.error("Error in sign-in:", error);
     next(error);
   }
+};
+
+
+export const refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        logger.info(`Refresh Token  called!!, : ${refreshToken}`)
+
+        if (!refreshToken) {
+            return next(new ApiError(403, "No token provided"));
+        }
+
+        const result = await AuthService.refreshToken(refreshToken)
+
+        ApiResponse.success(res, "New access token generated", { token: result.token, admin: result.admin } , 200);
+    } catch (error: any) {
+        console.log('error in refreshTOken',error);
+        next(new ApiError(403, error));
+    }
 };

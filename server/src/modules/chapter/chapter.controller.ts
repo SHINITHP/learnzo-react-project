@@ -69,6 +69,8 @@ export const updatePosition = async (
     const { list: updateData } = req.body;
     const authorId = (req as any).user.id;
 
+    console.log("Update Data:", updateData, courseId, authorId);
+
     const course = await ChapterServices.updateChapterPositions(
       courseId,
       updateData,
@@ -84,7 +86,7 @@ export const updatePosition = async (
       200
     );
   } catch (error) {
-    logger.error("Error in [ChapterUpdation]:", error);
+    logger.error("Error in [ChapterPositionUpdation]:", error);
     next(error);
   }
 };
@@ -147,7 +149,7 @@ export const updateChapter = async (
     logger.info(`Chapter updated successfull: ${chapter.title}`);
     ApiResponse.success(res, "Chapter updated successfull", chapter, 200);
   } catch (error) {
-    logger.error("Error in [ChapterCreation]:", error);
+    logger.error("Error in [ChapterUpdation]:", error);
     next(error);
   }
 };

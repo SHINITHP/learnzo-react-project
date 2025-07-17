@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Star,
   Play,
@@ -21,23 +21,35 @@ import CoursePreview from "@/components/CoursePreview";
 import StudentReviews from "@/components/StudentsReview";
 import RelatedCourses from "@/components/RelatedCourses";
 import { useGetCourseByIdQuery } from "@/services/courseApi";
+import { sanitizeHTML } from "@/utils/sanitize";
 
 const CourseDetails = () => {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  const [activeTab, setActiveTab] = useState("overview");
+  if (!id) return navigate("/courses");
 
-  const { data } = useGetCourseByIdQuery(id!);
-  const course = data?.data[0];
-  console.log("Course Details Data:", course);
+  const [activeTab, setActiveTab] = useState("overview");
+  const { data, error } = useGetCourseByIdQuery(id!);
+
+  if (error) {
+    console.error("Error fetching course data:", error);
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <h2 className="text-2xl font-bold text-red-600">
+          Error loading course details.
+        </h2>
+      </div>
+    );
+  }
+
+  const course = data?.data;
 
   const courseData = {
-    title: course?.title ?? "Complete React Developer Course 2024",
-    subtitle:
-      course?.description ??
-      "Build modern web applications with React, TypeScript, and Next.js",
+    title: course?.title ?? "",
+    subtitle: course?.description,
     price: course?.price ?? 89.99,
-    originalPrice: 199.99, 
+    originalPrice: 199.99,
     discount: 55,
     rating: 4.8,
     totalRatings: 12847,
@@ -47,9 +59,9 @@ const CourseDetails = () => {
         month: "long",
         year: "numeric",
       }) ?? "November 2024",
-    language: course?.languages?.[0] ?? "English",
-    duration: course?.hours ?? "32.5 hours",
-
+    language: course?.languages?.[0],
+    duration: course?.hours,
+    chapters: course?.chapters ?? [],
     instructor: {
       name: "Sarah Johnson",
       title: "Senior Full Stack Developer",
@@ -63,7 +75,7 @@ const CourseDetails = () => {
       image:
         course?.imageUrl ??
         "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=450&fit=crop",
-      video: null,
+      video: "",
     },
 
     includes: [
@@ -74,14 +86,7 @@ const CourseDetails = () => {
       { icon: Users, text: "Direct access to instructor" },
     ],
 
-    features: [
-      "Build 5+ real-world React projects",
-      "Master React Hooks and Context API",
-      "Learn TypeScript with React",
-      "Deploy applications to production",
-      "Testing with Jest and React Testing Library",
-      "State management with Redux Toolkit",
-    ],
+    features: course?.outcomes ?? [],
   };
 
   const ratingBreakdown = [
@@ -113,7 +118,12 @@ const CourseDetails = () => {
             <h1 className="text-3xl lg:text-4xl font-bold mb-4">
               {courseData.title}
             </h1>
-            <p className="text-lg text-slate-300 mb-6">{courseData.subtitle}</p>
+            <p
+              className="text-lg text-slate-300 mb-6"
+              dangerouslySetInnerHTML={{
+                __html: sanitizeHTML(courseData.subtitle),
+              }}
+            ></p>
             <div className="flex flex-wrap items-center gap-6 text-sm">
               <div className="flex items-center gap-2">
                 {[...Array(5)].map((_, i) => (
@@ -146,7 +156,7 @@ const CourseDetails = () => {
 
           {/* Preview for Mobile */}
           <div className="lg:hidden bg-transparent">
-            {/* <CoursePreview courseData={courseData} /> */}
+            <CoursePreview courseData={courseData} />
           </div>
         </div>
       </div>
@@ -200,7 +210,7 @@ const CourseDetails = () => {
                 </Card>
 
                 {/* Description */}
-                <Card className="bg-transparent border border-gray-300">
+                {/* <Card className="bg-transparent border border-gray-300">
                   <CardContent className="p-6 space-y-4 text-slate-700">
                     <h3 className="text-2xl font-bold">Course Description</h3>
                     <p>
@@ -215,7 +225,7 @@ const CourseDetails = () => {
                       hands-on builds.
                     </p>
                   </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* Instructor */}
                 <Card className="bg-transparent border border-gray-300">
@@ -259,23 +269,20 @@ const CourseDetails = () => {
                       Course Curriculum
                     </h3>
                     <div className="space-y-4">
-                      {[
-                        { title: "React Basics", lessons: 10, duration: "2h" },
-                        {
-                          title: "Advanced Hooks",
-                          lessons: 8,
-                          duration: "1.5h",
-                        },
-                      ].map((item, i) => (
+                      {courseData.chapters.map((item, i) => (
                         <div
                           key={i}
                           className="flex justify-between items-center p-4 border rounded-lg hover:bg-slate-50"
                         >
                           <div>
                             <h4 className="font-medium">{item.title}</h4>
-                            <p className="text-sm text-slate-600">
-                              {item.lessons} lessons • {item.duration}
-                            </p>
+                            <p
+                              className="text-sm text-slate-600"
+                              dangerouslySetInnerHTML={{
+                                __html: sanitizeHTML(item.description),
+                              }}
+                            ></p>{" "}
+                            <span> {item.duration}</span>
                           </div>
                           <Button variant="ghost" size="sm">
                             <Play className="w-4 h-4" />
@@ -342,7 +349,7 @@ const CourseDetails = () => {
 
           {/* Right Sidebar */}
           <div className="hidden lg:block space-y-6 bg-transparent">
-            {/* <CoursePreview courseData={courseData} /> */}
+            <CoursePreview courseData={courseData} />
             <Card className="bg-[#F8F9F5] border border-gray-300">
               <CardContent className="p-6 bg-transparent">
                 <h3 className="font-semibold mb-4">This course includes:</h3>
