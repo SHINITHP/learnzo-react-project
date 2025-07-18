@@ -28,14 +28,15 @@ const Layout: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-100 transition-colors dark:bg-slate-900">
+    <div className="min-h-screen bg-slate-100 relative z-0 transition-colors dark:bg-slate-900">
       <div
-        className={cn(
-          "pointer-events-none fixed inset-0 -z-10 dark:bg-slate-900 opacity-0 transition-opacity",
-          !collapsed &&
-            "max-md:pointer-events-auto max-md:z-50 max-md:opacity-30"
-        )}
-      />
+  className={cn(
+    "pointer-events-none fixed inset-0 z-0 dark:bg-slate-900 opacity-0 transition-opacity",
+    !collapsed &&
+      "max-md:pointer-events-auto max-md:z-30 max-md:opacity-30"
+  )}
+/>
+
       <Sidebar ref={sidebarRef} collapsed={collapsed} />
       <div
         className={cn(

@@ -83,17 +83,19 @@ class CourseService {
   }
 
   static async getCoursesService() {
-    const course = await Course.find({ isPublished: true })
+    const courses = await Course.find({ isPublished: true })
       .populate({
         path: "chapters",
         match: { isPublished: true },
       })
       .populate("attachments")
+      .populate("categoryId", "name")
+      .populate("authorId", "fullName email")
       .lean();
 
-    if (!course) throw new ApiError(404, "No courses found");
+    if (!courses) throw new ApiError(404, "No courses found");
 
-    return course;
+    return courses;
   }
 
   static async updateCourseService(data: {

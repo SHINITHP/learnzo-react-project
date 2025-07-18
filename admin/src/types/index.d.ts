@@ -103,28 +103,44 @@ export interface PriceFormProps {
   };
 }
 
+export interface ICategory {
+  _id: string;
+  name: string;
+}
+
 export interface ICourse {
+  _id: string;
+  author: string;
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  price?: number;
+  isPublished: boolean;
+  categoryId?: string | ICategory;
+  outcomes?: [];
+  languages?: string[];
+  hours?: string;
+  chapters: IChapter[];
+  attachments: IAttachment[];
+  purchases: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICourseResponse {
   success: boolean;
   message: string;
-  data: {
-    _id: string;
-    userId: string;
-    title: string;
-    description?: string;
-    imageUrl?: string;
-    price?: number;
-    isPublished: boolean;
-    categoryId?: string;
-    category?: ICategory;
-    outcomes?: [];
-    languages?: string[];
-    hours?: string;
-    chapters: IChapter[];
-    attachments: IAttachment[];
-    purchases: string[];
-    createdAt: string;
-    updatedAt: string;
-  };
+  data: ICourse[];
+}
+export interface ICourseByIDResponse {
+  success: boolean;
+  message: string;
+  data: ICourse;
+}
+export interface ICourseCreationResponse {
+  success: boolean;
+  message: string;
+  data: ICourse;
 }
 
 export interface IUpdateCoursePayload {

@@ -57,7 +57,7 @@ function App() {
             <Route path="courses/:id" element={<EditCourse />} />
             <Route path="courses/:id/chapters/:chapterId" element={<AddChapter />} />
 
-            <Route path="add-course" element={<AddCourse />} />
+            <Route path="create-course" element={<AddCourse />} />
             <Route
               path="settings"
               element={<h1 className="title">Settings</h1>}

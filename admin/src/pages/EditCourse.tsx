@@ -7,6 +7,7 @@ import TitleForm from "@/components/title-form";
 import { useLazyGetCategoriesQuery } from "@/services/categoryApi";
 import { useLazyGetCourseByIdQuery } from "@/services/courseApi";
 import {
+  ArrowLeft,
   CircleDollarSign,
   File,
   LayoutDashboard,
@@ -23,6 +24,7 @@ import { CourseActions } from "@/components/course-action";
 import LearningOutcomesForm from "@/components/learning-outcome-form";
 import LanguageForm from "@/components/language-form";
 import HoursForm from "@/components/course-hours-form";
+import { Link } from "react-router-dom";
 
 const EditCourse = () => {
   const { id } = useParams<{ id: string }>();
@@ -69,7 +71,7 @@ const EditCourse = () => {
     course.languages,
     course.outcomes,
     course.chapters.some((chapter) => chapter.isPublished),
-    course.attachments
+    course.attachments,
   ];
 
   const totalFields = requiredFields.length;
@@ -86,6 +88,14 @@ const EditCourse = () => {
         description="LearnEase admin edit course page"
       />
       <div className="mt-16 rounded-2xl md:border border-gray-200 md:bg-white md:dark:border-gray-800 md:dark:bg-white/[0.03]">
+        <Link
+          to="/courses"
+          className="inline-flex items-center text-sm text-white hover:text-muted-foreground px-6 mt-10"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Courses
+        </Link>
+
         {!course?.isPublished && (
           <Banner
             className="bg-amber-200 text-amber-900 mt-6"
@@ -178,6 +188,5 @@ const EditCourse = () => {
   );
 };
 
-// MultiFileUpload
 
 export default EditCourse;

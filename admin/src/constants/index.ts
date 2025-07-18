@@ -33,9 +33,9 @@ export const navbarLinks = [
                 path: "/courses",
             },
             {
-                label: "New Course",
+                label: "Create Course",
                 icon: PackagePlus,
-                path: "/add-course",
+                path: "/create-course",
             },
             
         ],

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "seed:categories": "ts-node src/scripts/seedCategories.ts",
+    "seed:categories": "ts-node src/scripts/seedData.ts",
+    "seed:courses": "ts-node src/scripts/seedData.ts",
     "start": "node dist/server.js",
     "build": "tsc",
     "dev": "nodemon src/server.ts"

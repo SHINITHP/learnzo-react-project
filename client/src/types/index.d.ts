@@ -45,7 +45,7 @@ export interface ISignUpResponse {
 export interface ICourse {
   _id: string;
   authorId: string;
-  categoryId?: string;
+  categoryId?: string | ICategory;
   title: string;
   description?: string;
   imageUrl?: string;

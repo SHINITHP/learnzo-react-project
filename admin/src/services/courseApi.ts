@@ -1,5 +1,5 @@
 import type { RootState } from "@/redux/store";
-import type { IAttachment, ICourse, IUpdateCoursePayload } from "@/types";
+import type { IAttachment, ICourse, ICourseCreationResponse, ICourseByIDResponse, ICourseResponse, IUpdateCoursePayload } from "@/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const courseApi = createApi({
@@ -14,7 +14,7 @@ export const courseApi = createApi({
   }),
   tagTypes: ["Course", "Attachments"],
   endpoints: (builder) => ({
-    createCourse: builder.mutation<ICourse, { title: string }>({
+    createCourse: builder.mutation<ICourseCreationResponse, { title: string }>({
       query: (course) => ({
         url: "/",
         method: "POST",
@@ -38,18 +38,18 @@ export const courseApi = createApi({
           : ["Attachments"],
     }),
 
-    getCourses: builder.query<ICourse[], void>({
-      query: () => "/",
+    getCourses: builder.query<ICourseResponse, void>({
+      query: () => "/get-courses",
       providesTags: ["Course"],
     }),
 
-    getCourseById: builder.query<ICourse, string>({
+    getCourseById: builder.query<ICourseByIDResponse, string>({
       query: (id) => `/${id}`,
       providesTags: (result, error, id) => [{ type: "Course", id }],
     }),
 
     togglePublish: builder.mutation<
-      ICourse,
+      ICourseResponse,
       { id: string; publish: boolean }
     >({
       query: ({ id, publish }) => ({
