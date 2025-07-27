@@ -6,6 +6,7 @@ import {
   Edit,
   BookOpenIcon,
   HeartIcon,
+  Heart,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,22 +44,30 @@ const CourseCard = ({
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          {/* Overlay gradient for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-
-          {/* Category badge */}
-          <div className="absolute top-3 left-3">
+          <div className="absolute top-3 left-3 ">
             <Badge
-              className={`border-0 bg-slate-900 text-white font-medium text-xs shadow-sm`}
+              variant="secondary"
+              className="text-xs font-medium bg-slate-900 text-white"
             >
               {categoryId?.name}
             </Badge>
           </div>
+          <button
+            onClick={() => {
+              setWishlist(!isWishlisted);
+            }}
+            className="absolute top-3 right-3 p-2 bg-background/80 rounded-full border border-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-background"
+          >
+            {isWishlisted ? (
+              <HeartIcon className="w-4 h-4 text-red-500 fill-red-500" />
+            ) : (
+              <HeartIcon className="w-4 h-4 text-gray-600" />
+            )}
+          </button>
 
-          {/* Price badge */}
-          <div className="absolute top-3 right-3">
+          <div className="absolute bottom-5 left-3">
             <Badge
               className={`${
                 price === 0
@@ -120,27 +129,20 @@ const CourseCard = ({
             variant="outline"
             size="sm"
             onClick={() => {
-              navigate(`/courses/${_id}`);
+              navigate(`/course/${_id}`);
             }}
           >
             <BookOpenIcon className="w-4 h-4 mr-2" />
-            Start Learning
+            View Course
           </Button>
 
           <Button
-            className="w-full transition-all bg-transparent border border-[#2F4021] hover:bg-transparent hover:border-[#AFD275] text-[#2F4021] duration-200 hover:shadow-md font-medium"
+            className="w-full transition-all text-md font-extrabold bg-transparent border border-[#2F4021] hover:bg-[#AFD275] hover:border-[#AFD275] text-[#2F4021] duration-200 hover:shadow-md "
             variant="outline"
             size="sm"
-            onClick={() => {
-              setWishlist(!isWishlisted);
-            }}
+            onClick={() => {}}
           >
-            {isWishlisted ? (
-              <HeartIcon className="w-5 h-5 text-red-500 fill-red-500" />
-            ) : (
-              <HeartIcon className="w-5 h-5" />
-            )}
-            Add to Wishlist
+            Enroll Course
           </Button>
         </CardFooter>
       </div>

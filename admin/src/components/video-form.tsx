@@ -2,17 +2,19 @@ import { VideoIcon, Pencil, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { AspectRatio } from "./ui/aspect-ratio";
-import { VideoUpload } from "./handle-video-upload";
+// import { VideoUpload } from "./handle-video-upload";
+import type { IMuxData } from "@/types";
+import { VideoUpload } from "./mux-video-upload";
+import { MuxVideoPlayer } from "./mux-video-player";
 
 export interface ChapterVideoFormProps {
   initialData: {
     videoUrl?: string;
+    muxData?: IMuxData | null;
   };
-  courseId: string;
-  chapterId: string;
 }
 
-const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVideoFormProps) => {
+const ChapterVideoForm = ({ initialData }: ChapterVideoFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -20,7 +22,11 @@ const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVideoForm
     <div className="mt-6 border bg-slate-100 dark:bg-slate-900 rounded-lg p-4">
       <div className="font-medium flex items-center justify-between">
         Course video
-        <Button className="text-xs sm:text-sm" onClick={toggleEdit} variant="ghost">
+        <Button
+          className="text-xs sm:text-sm"
+          onClick={toggleEdit}
+          variant="ghost"
+        >
           {isEditing && <>Cancel</>}
 
           {!isEditing && !initialData.videoUrl && (
@@ -47,20 +53,23 @@ const ChapterVideoForm = ({ initialData, courseId, chapterId }: ChapterVideoForm
         ) : (
           <div className="relative aspect-video mt-2">
             <AspectRatio ratio={16 / 9} className="bg-muted rounded-lg">
-              <video
-                controls
-                className="h-full w-full rounded-lg object-cover"
-                src={initialData.videoUrl}
-              >
-                Your browser does not support the video tag.
-              </video>
+              <MuxVideoPlayer
+                playbackId={initialData.videoUrl}
+                className="absolute inset-0 h-full w-full object-cover rounded-lg"
+              />
             </AspectRatio>
           </div>
         ))}
-      
+
       {isEditing && (
         <div className="mt-6 h-96">
-          <VideoUpload initialData={{ videoUrl: initialData.videoUrl || "" }} isEditing={isEditing} />
+          <VideoUpload
+            initialData={{
+              videoUrl: initialData.videoUrl || "",
+              muxData: initialData.muxData ?? null,
+            }}
+            isEditing={isEditing}
+          />
         </div>
       )}
     </div>

@@ -3,6 +3,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Home";
 import AppLayout from "./layout/AppLayout";
 import CoursesDetailsPage from "./pages/CoursesDetailsPage";
+import CoursesList from "./components/course-lists";
 
 function App() {
   return (
@@ -12,7 +13,8 @@ function App() {
         <Routes>
           <Route element={<AppLayout />}>
             <Route index path="/" element={<Home />} />
-            <Route index path="/courses/:id" element={<CoursesDetailsPage />} />
+            <Route index path="/course/:id" element={<CoursesDetailsPage />} />
+            <Route index path="/courses" element={<CoursesList />} />
           </Route>
         </Routes>
       </Router>

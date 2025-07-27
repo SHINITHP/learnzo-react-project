@@ -2,7 +2,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import PageMeta from "../components/common/PageMeta";
 import AuthPage from "./AuthPage";
 import Hero from "@/components/hero-section";
-import { CourseLists } from "@/components/CourseLists";
+import { FeaturedCourses } from "@/components/featured-course";
+import CourseFAQ from "@/components/CourseFAQ";
 
 const Home = () => {
   const [searchParams] = useSearchParams();
@@ -20,7 +21,9 @@ const Home = () => {
 
       <div className="min-h-screen bg-[#F8F9F5]">
         <Hero />
-        <CourseLists />
+        <FeaturedCourses />
+        <CourseFAQ />
+        {/* <CourseStats /> */}
       </div>
 
       {isAuthModalOpen && (

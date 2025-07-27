@@ -10,6 +10,7 @@ const courseSchema = new Schema<ICourse>(
     price: { type: Number },
     isPublished: { type: Boolean, default: false },
     categoryId: { type: Schema.Types.ObjectId, ref: "Category" },
+    difficultyLevel: { type: String },
     chapters: [{ type: Schema.Types.ObjectId, ref: "Chapter" }],
     outcomes: [{ type: String }],
     languages: [{ type: String }],
@@ -22,7 +23,7 @@ const courseSchema = new Schema<ICourse>(
   { timestamps: true }
 );
 
-// courseSchema.index({ categoryId: 1 });
+courseSchema.index({ categoryId: 1 });
 
 
 import { IAttachment } from "../../types";
@@ -37,9 +38,7 @@ const attachmentSchema = new Schema<IAttachment>(
   { timestamps: true }
 );
 
-// attachmentSchema.index({ courseId: 1 });
-
-// chapterSchema.index({ courseId: 1 });
+attachmentSchema.index({ courseId: 1 });
 
 import { IMuxData } from "../../types";
 

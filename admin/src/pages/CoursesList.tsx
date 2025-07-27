@@ -8,7 +8,7 @@ import { useState } from "react";
 import { PaginationControls } from "@/components/pagination-controls";
 import { useGetCategoriesQuery } from "@/services/categoryApi";
 import { useGetCoursesQuery } from "@/services/courseApi";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
@@ -18,8 +18,10 @@ const CoursesList = () => {
   const { data: categoryResponse } = useGetCategoriesQuery();
   const { data: courseResponse } = useGetCoursesQuery();
 
-  const CategoryData = categoryResponse?.data || [];
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
 
+  const CategoryData = categoryResponse?.data || [];
   const categories = [{ _id: "all", name: "All" }, ...CategoryData];
 
   const courses = courseResponse?.data || [];
@@ -27,15 +29,19 @@ const CoursesList = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredCourses =
-    selectedCategory === "All"
-      ? courses
-      : courses.filter((course) => {
-          const category = course.categoryId;
+  const filteredCourses = courses.filter((course) => {
+    const category = course.categoryId;
 
-          if (typeof category === "string") return false; // not populated
-          return category?.name === selectedCategory;
-        });
+    const matchesCategory =
+      selectedCategory === "All" ||
+      (typeof category !== "string" && category?.name === selectedCategory);
+
+    const matchesSearch =
+      !searchQuery ||
+      course.title.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
 
   const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -52,7 +58,6 @@ const CoursesList = () => {
   return (
     <div className="min-h-screen dark:bg-transparent bg-gray-100 flex flex-col justify-between">
       <div className="w-full py-14 sm:py-12">
-
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-2">

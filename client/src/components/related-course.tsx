@@ -9,7 +9,7 @@ import {
 import { useRef } from "react";
 import CourseCard from "./course-cards";
 
-export const CourseLists = () => {
+export const RelatedCourses = () => {
   const navigate = useNavigate();
 
   // Create a ref for the carousel instance
@@ -22,10 +22,10 @@ export const CourseLists = () => {
 
   
   return (
-    <section className="h-screen md:mt-20  pl-3 pr-3 sm:pl-6 sm:pr-6 lg:pl-6 lg:pr-6 xl:pl-16 xl:pr-16 w-full flex flex-col bg-[#f9fcf2]">
+    <section className="md:mt-20  pl-3 pr-3 sm:pl-6 sm:pr-6 lg:pl-6 lg:pr-6 xl:pl-16 xl:pr-16 w-full flex flex-col bg-[#f9fcf2]">
       <header className="w-full flex justify-between items-center pb-10">
         <h1 className="text-2xl md:text-4xl text-[#2F4021] font-bold">
-          Popular Courses
+          Related Courses
         </h1>
         <Button
           onClick={() => navigate("/courses")}

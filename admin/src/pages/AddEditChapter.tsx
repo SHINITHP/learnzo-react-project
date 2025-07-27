@@ -146,8 +146,6 @@ const AddChapter = () => {
               </div>
               <ChapterVideoForm
                 initialData={data.data}
-                courseId={id!}
-                chapterId={chapterId!}
               />
             </div>
           </div>

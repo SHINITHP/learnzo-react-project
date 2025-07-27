@@ -10,20 +10,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateCourseMutation } from "@/services/courseApi";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import type { ICategory } from "@/types";
 
-interface CategoryFormProps {
+interface DifficultyLevelFormProps {
   initialData: {
-    categoryId: string | ICategory;
+    difficultyLevel: string;
   };
   options: { label: string; value: string }[];
 }
 
 const formSchema = z.object({
-  categoryId: z.string().min(1),
+  difficultyLevel: z.string().min(1),
 });
 
-const CategoryForm = ({ initialData, options }: CategoryFormProps) => {
+const DifficultyLevelForm = ({ initialData, options }: DifficultyLevelFormProps) => {
   const { id } = useParams<{ id: string }>();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -33,10 +32,7 @@ const CategoryForm = ({ initialData, options }: CategoryFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      categoryId:
-        typeof initialData.categoryId === "string"
-          ? initialData.categoryId
-          : initialData.categoryId._id,
+      difficultyLevel: initialData.difficultyLevel || "",
     },
   });
 
@@ -46,7 +42,7 @@ const CategoryForm = ({ initialData, options }: CategoryFormProps) => {
     try {
       await updateCourse({
         id: id!,
-        updates: { categoryId: values.categoryId },
+        updates: { difficultyLevel: values.difficultyLevel },
       }).unwrap();
       toast.success(`Category updated successfull`);
       toggleEdit();
@@ -56,24 +52,20 @@ const CategoryForm = ({ initialData, options }: CategoryFormProps) => {
   };
 
   const selectedOption = options.find(
-    (option) => option.value === initialData.categoryId
+    (option) => option.value === initialData.difficultyLevel
   );
 
   return (
     <div className="mt-6 border bg-slate-100 dark:bg-slate-900 rounded-lg pt-2 pb-4 pl-3 pr-2">
       <div className="font-medium flex items-center justify-between">
-        Course category
-        <Button
-          className="text-xs sm:text-sm"
-          onClick={toggleEdit}
-          variant={"ghost"}
-        >
+        Course level
+        <Button className="text-xs sm:text-sm" onClick={toggleEdit} variant={"ghost"}>
           {isEditing ? (
             <>Cancel</>
           ) : (
             <>
               <Pencil />
-              Edit category
+              Edit level
             </>
           )}
         </Button>
@@ -82,10 +74,10 @@ const CategoryForm = ({ initialData, options }: CategoryFormProps) => {
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.categoryId && "text-slate-500 italic"
+            !initialData.difficultyLevel && "text-slate-500 italic"
           )}
         >
-          {selectedOption?.label || "No category"}
+          {selectedOption?.label || "No level"}
         </p>
       )}
       {isEditing && (
@@ -96,7 +88,7 @@ const CategoryForm = ({ initialData, options }: CategoryFormProps) => {
           >
             <FormField
               control={form.control}
-              name="categoryId"
+              name="difficultyLevel"
               render={({ field }) => {
                 return (
                   <FormItem>
@@ -128,4 +120,4 @@ const CategoryForm = ({ initialData, options }: CategoryFormProps) => {
   );
 };
 
-export default CategoryForm;
+export default DifficultyLevelForm;

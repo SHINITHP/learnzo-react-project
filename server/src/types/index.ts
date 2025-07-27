@@ -27,6 +27,7 @@ export interface ICourse extends Document {
   price?: number;
   isPublished: boolean;
   categoryId?: Types.ObjectId;
+  difficultyLevel?: string;
   chapters: Types.ObjectId[];
   outcomes: string[];
   languages: String[];

@@ -29,6 +29,28 @@ export const chapterApi = createApi({
       ],
     }),
 
+    uploadDataToMux: builder.mutation<
+      { success: boolean; message: string; data: { url: string; upload_id: string; } },
+      void
+    >({
+      query: () => ({
+        url: "/mux/upload-video",
+        method: "POST",
+        body: {},
+      }),
+    }),
+
+    finalizeMuxUpload: builder.mutation<
+      { success: boolean; message: string; data: { asset_id: string; playback_id: string; } },
+      { upload_id: string }
+    >({
+      query: ({ upload_id }) => ({
+        url: "/mux/upload-video/complete",
+        method: "POST",
+        body: { upload_id }
+      }),
+    }),
+
     updateChapter: builder.mutation<
       IChapter,
       { id: string; courseId: string; updates: IUpdateCoursePayload }
@@ -91,4 +113,6 @@ export const {
   useUpdateChapterPositionsMutation,
   useUpdateChapterMutation,
   useTogglePublishMutation,
+  useUploadDataToMuxMutation,
+  useFinalizeMuxUploadMutation
 } = chapterApi;

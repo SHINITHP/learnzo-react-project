@@ -1,31 +1,44 @@
 import { AlertCircleIcon, VideoIcon, XIcon } from "lucide-react";
 import { useRef, useState, type DragEvent, type ChangeEvent } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { uploadToCloudinary } from "@/utils/cloudinary";
+import { useMuxUpload } from "@/hooks/mux-upload";
 import { useParams } from "react-router-dom";
 import { useUpdateChapterMutation } from "@/services/chapterApi";
+import { MuxVideoPlayer } from "./mux-video-player";
+import type { IMuxData } from "@/types";
 
-export interface VideoUploadProps {
+interface VideoUploadProps {
   initialData: {
-    videoUrl: string;
+    videoUrl?: string;
+    muxData: IMuxData | null;
   };
   isEditing: boolean;
 }
 
 export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
-  const maxSizeMB = 50; // Increased for videos
+  const maxSizeMB = 500; // Increased for videos
   const maxSize = maxSizeMB * 1024 * 1024;
-  const { id: courseId, chapterId } = useParams<{ id: string; chapterId: string; }>();
+  const { id: courseId, chapterId } = useParams<{
+    id: string;
+    chapterId: string;
+  }>();
   const [updateChapter, { isLoading }] = useUpdateChapterMutation();
 
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState(initialData.videoUrl);
+  const [previewUrl, setPreviewUrl] = useState(initialData.videoUrl || "");
+  const [playbackId, setPlaybackId] = useState(
+    initialData.muxData?.playbackId || ""
+  );
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isUploaded, setIsUploaded] = useState(false);
+  const [isUploaded, setIsUploaded] = useState(
+    !!initialData.muxData?.playbackId
+  );
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const { uploadToMux } = useMuxUpload();
 
   const handleUpload = async () => {
     if (!file) {
@@ -35,20 +48,40 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
 
     try {
       setIsUploading(true);
-      const uploadedUrl = await uploadToCloudinary(file, "video"); // Changed to video upload
-      setPreviewUrl(uploadedUrl);
+      setUploadProgress(0);
+
+      // Simulate progress updates during upload
+      const progressInterval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + Math.random() * 10;
+        });
+      }, 500);
+
+      const muxPlaybackId = await uploadToMux(file);
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      setPlaybackId(muxPlaybackId);
       setIsUploaded(true);
 
       await updateChapter({
         id: chapterId!,
         courseId: courseId!,
-        updates: { videoUrl: uploadedUrl },
-      }).unwrap();
+        updates: {
+          videoUrl: muxPlaybackId,
+        },
+      });
 
-      toast.success(`Video upload successful!`);
+      toast.success("Video upload successful!");
     } catch (error) {
-      console.error(error);
-      toast.error("Upload failed");
+      console.error("Upload error:", error);
+      toast.error("Upload failed. Please try again.");
+      setUploadProgress(0);
     } finally {
       setIsUploading(false);
     }
@@ -76,6 +109,7 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
     setFile(selectedFile);
     setPreviewUrl(URL.createObjectURL(selectedFile));
     setIsUploaded(false);
+    setPlaybackId("");
   };
 
   const handleDragEnter = (e: DragEvent<HTMLElement>) => {
@@ -118,13 +152,16 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
     setFile(droppedFile);
     setPreviewUrl(URL.createObjectURL(droppedFile));
     setIsUploaded(false);
+    setPlaybackId("");
   };
 
   const removeFile = () => {
     setFile(null);
     setPreviewUrl(initialData.videoUrl || "");
+    setPlaybackId(initialData.muxData?.playbackId || "");
     setError("");
-    setIsUploaded(false);
+    setIsUploaded(!!initialData.muxData?.playbackId);
+    setUploadProgress(0);
   };
 
   return (
@@ -143,21 +180,20 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
           <input
             ref={inputRef}
             onChange={handleFileChange}
-            accept="video/*" // Changed to accept video files
+            accept="video/*"
             type="file"
             className="sr-only"
             aria-label="Upload video"
           />
 
-          {previewUrl && isUploaded ? (
-            // Final uploaded state
-            <video
-              controls
-              className="absolute inset-0 h-full object-cover size-full"
-              src={previewUrl}
-            >
-              Your browser does not support the video tag.
-            </video>
+          {playbackId && isUploaded ? (
+            // Final uploaded state with Mux player
+            <div className="absolute inset-0 h-full">
+              <MuxVideoPlayer
+                playbackId={playbackId}
+                className="absolute inset-0 h-full w-full object-cover rounded-lg"
+              />
+            </div>
           ) : previewUrl && file && !isUploaded ? (
             // Preview with overlay and upload button
             <div className="absolute inset-0 h-full">
@@ -167,8 +203,18 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
               />
               <div className="absolute flex flex-col inset-0 items-center justify-center">
                 <p className="mb-1.5 text-xs md:text-sm font-medium">
-                  Your video is ready — click Upload to save it
+                  {isUploading
+                    ? `Uploading... ${Math.round(uploadProgress)}%`
+                    : "Your video is ready — click Upload to save it"}
                 </p>
+                {isUploading && (
+                  <div className="w-48 bg-gray-200 rounded-full h-2 mb-3">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                )}
                 <Button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -181,47 +227,58 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
                 </Button>
               </div>
             </div>
+          ) : previewUrl && !file && isUploaded ? (
+            // Existing uploaded video (from initial data)
+            <div className="absolute inset-0 h-full">
+              {playbackId ? (
+                <MuxVideoPlayer
+                  playbackId={playbackId}
+                  className="absolute inset-0 h-full w-full object-cover rounded-lg"
+                />
+              ) : (
+                <MuxVideoPlayer
+                  playbackId={previewUrl}
+                  className="absolute inset-0 h-full w-full object-cover rounded-lg"
+                />
+              )}
+            </div>
           ) : (
             // No video state
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              {previewUrl && (
-                <video
-                  className="size-full object-cover opacity-20"
-                  src={previewUrl}
-                />
-              )}
-              <div className="absolute flex flex-col inset-0 items-center justify-center">
-                <div
-                  className="bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border"
-                  aria-hidden="true"
-                >
-                  <VideoIcon className="size-4 opacity-60" />
-                </div>
-                <p className="mb-1.5 text-sm font-medium">
-                  Drop your video here or click to browse
-                </p>
-                <p className="text-muted-foreground text-xs">
-                  Max size: {maxSizeMB}MB
-                </p>
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleUpload();
-                  }}
-                  className="mt-2 min-w-28"
-                  disabled={isUploading}
-                >
-                  {isUploading
-                    ? "Uploading…"
-                    : file
-                    ? "Upload (1)"
-                    : "Select video"}
-                </Button>
+              <div
+                className="bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border"
+                aria-hidden="true"
+              >
+                <VideoIcon className="size-4 opacity-60" />
               </div>
+              <p className="mb-1.5 text-sm font-medium">
+                Drop your video here or click to browse
+              </p>
+              <p className="text-muted-foreground text-xs">
+                Max size: {maxSizeMB}MB
+              </p>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (file) {
+                    handleUpload();
+                  } else {
+                    openFileDialog();
+                  }
+                }}
+                className="mt-2 min-w-28"
+                disabled={isUploading}
+              >
+                {isUploading
+                  ? "Uploading…"
+                  : file
+                  ? "Upload (1)"
+                  : "Select video"}
+              </Button>
             </div>
           )}
         </div>
-        {previewUrl && (
+        {(previewUrl || playbackId) && (
           <div className="absolute top-4 right-4">
             <button
               type="button"

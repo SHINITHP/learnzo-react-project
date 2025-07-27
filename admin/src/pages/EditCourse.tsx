@@ -25,6 +25,7 @@ import LearningOutcomesForm from "@/components/learning-outcome-form";
 import LanguageForm from "@/components/language-form";
 import HoursForm from "@/components/course-hours-form";
 import { Link } from "react-router-dom";
+import DifficultyLevelForm from "@/components/difficulty-level-form";
 
 const EditCourse = () => {
   const { id } = useParams<{ id: string }>();
@@ -181,12 +182,20 @@ const EditCourse = () => {
                 initialData={{ attachments: course?.attachments }}
               />
             </div>
+
+            <DifficultyLevelForm
+              initialData={{ difficultyLevel: course.difficultyLevel || "" }}
+              options={[
+                { label: "Beginner", value: "beginner" },
+                { label: "Intermediate", value: "intermediate" },
+                { label: "Advanced", value: "advanced" },
+              ]}
+            />
           </div>
         </div>
       </div>
     </>
   );
 };
-
 
 export default EditCourse;

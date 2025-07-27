@@ -4,6 +4,7 @@ import { Course } from "../course/course.model";
 import { Chapter } from "./chapter.model";
 import logger from "../../utils/logger";
 import { IChapter } from "../../types";
+import { mux } from "../../utils/mux";
 
 export default class ChapterServices {
   static async chapterCreationService(chapterData: {
@@ -69,6 +70,44 @@ export default class ChapterServices {
     await chapter.save();
     logger.info(`Chapter updated: ${chapter.title}`);
     return chapter;
+  }
+
+  static async UploadChapterVideoService() {
+    const upload = await mux.video.uploads.create({
+      new_asset_settings: {
+        playback_policy: ["public"],
+      },
+      cors_origin: "*", // or your frontend URL
+    });
+
+    if (!upload || !upload.url || !upload.id) {
+      throw new ApiError(500, "Failed to create Mux upload");
+    }
+
+    return {
+      url: upload.url,
+      upload_id: upload.id,
+    };
+  }
+
+  static async finalizeMuxUploadService(upload_id: string) {
+    // 1. Get the upload object by ID
+    const upload = await mux.video.uploads.retrieve(upload_id);
+
+    const assetId = upload.asset_id;
+
+    if (!assetId) {
+      throw new Error("Asset not created yet. Try again later.");
+    }
+
+    const asset = await mux.video.assets.retrieve(assetId);
+
+    const playbackId = asset.playback_ids?.[0]?.id;
+
+    return {
+      assetId,
+      playbackId,
+    };
   }
 
   static async getChapterByIdService({
@@ -141,7 +180,6 @@ export default class ChapterServices {
           { _id: courseId },
           { $set: { isPublished: false } }
         );
-
       }
     }
 

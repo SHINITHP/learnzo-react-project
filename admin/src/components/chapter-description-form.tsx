@@ -46,7 +46,7 @@ const ChapterDescriptionForm = ({
   const renderDescription = (htmlContent: string) => {
     if (!htmlContent) return "No description";
     return (
-      <div
+      <p
         dangerouslySetInnerHTML={{ __html: htmlContent }}
         className="prose prose-sm max-w-none"
       />

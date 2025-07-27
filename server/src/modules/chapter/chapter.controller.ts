@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import logger from "../../utils/logger";
 import ChapterServices from "./chapter.services";
 import ApiResponse from "../../utils/apiResponse";
+import { mux } from "../../utils/mux";
 
 export const createChapter = async (
   req: Request,
@@ -50,6 +51,69 @@ export const getChapterById = async (
   } catch (error) {
     logger.error("Error in [ChapterGetByID]:", error);
     next(error);
+  }
+};
+
+export const createDirectUpload = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    logger.info(
+      `Received Mux direct upload request: ${JSON.stringify(req.body)}`
+    );
+
+    const result = await ChapterServices.UploadChapterVideoService();
+
+    logger.info(`Mux direct upload created successfully: ${result.upload_id}`);
+
+    ApiResponse.success(
+      res,
+      "Mux direct upload created successfully",
+      {
+        url: result.url,
+        upload_id: result.upload_id,
+      },
+      201
+    );
+  } catch (err) {
+    logger.error("Failed to create Mux direct upload", err);
+    next(err);
+  }
+};
+
+export const finalizeMuxUpload = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    logger.info(
+      `Received Mux finalizeMuxUpload request: ${JSON.stringify(req.body)}`
+    );
+
+    const { upload_id } = req.body;
+    if (!upload_id) {
+      throw new Error("Upload ID is required");
+    }
+
+    const result = await ChapterServices.finalizeMuxUploadService(upload_id);
+
+    logger.info(`Mux direct upload created successfully: ${result.playbackId}`);
+
+    ApiResponse.success(
+      res,
+      "Mux direct upload created successfully",
+      {
+        asset_id: result.assetId,
+        playback_id: result.playbackId,
+      },
+      201
+    );
+  } catch (err) {
+    logger.error("Failed to create Mux direct upload", err);
+    next(err);
   }
 };
 
@@ -111,12 +175,20 @@ export const publishChapter = async (
       chapterId: id,
       courseId,
       authorId,
-      publish
+      publish,
     });
 
-    logger.info(`Chapter successfully ${publish? "published" : "unpublished"}: ${chapter.title}`);
-    ApiResponse.success(res, `Chapter ${publish? "published" : "unpublished"} successful`, chapter, 200);
-    
+    logger.info(
+      `Chapter successfully ${publish ? "published" : "unpublished"}: ${
+        chapter.title
+      }`
+    );
+    ApiResponse.success(
+      res,
+      `Chapter ${publish ? "published" : "unpublished"} successful`,
+      chapter,
+      200
+    );
   } catch (error) {
     logger.error("Error in [ChapterPublish]:", error);
     next(error);

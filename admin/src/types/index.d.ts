@@ -117,6 +117,7 @@ export interface ICourse {
   price?: number;
   isPublished: boolean;
   categoryId?: string | ICategory;
+  difficultyLevel?: string;
   outcomes?: [];
   languages?: string[];
   hours?: string;
@@ -155,6 +156,7 @@ export interface IUpdateCoursePayload {
   isPublished?: boolean;
   languages?: string[];
   categoryId?: string;
+  difficultyLevel?: string;
   outcomes?: string[];
 }
 
@@ -185,6 +187,18 @@ export interface IAttachment {
   updatedAt: string;
 }
 
+export interface IMuxData {
+  _id: string;
+  courseId: Types.ObjectId;
+  chapterId: Types.ObjectId;
+  assetId: string;
+  playbackId?: string;
+  status: "waiting" | "ready" | "errored";
+  uploadedBy: Types.ObjectId;
+  createdAt?: Date;
+
+}
+
 export interface IChapter {
   _id: string;
   title: string;
@@ -193,7 +207,7 @@ export interface IChapter {
   position: number;
   isPublished?: boolean;
   isFree: boolean;
-  muxData?: string;
+  muxData?: IMuxData | null;
   courseId: string;
   userProgress?: string[];
   createdAt?: string;

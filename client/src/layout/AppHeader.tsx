@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import SearchBox from "@/components/search-box";
+// import SearchBox from "@/components/search-box";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import MenuModal from "@/components/menubar-modal";
@@ -27,6 +27,13 @@ const AppHeader = () => {
 
       <div className="hidden lg:block w-[55%] pl-8 pr-8">
         {/* <SearchBox /> */}
+        {/* <ul className="flex items-center justify-evenly gap-4 text-[#2F4021] font-semibold text-md">
+          <li className="cursor-pointer py-2 px-8 rounded-sm hover:bg-[#ebf5d9] transition-all duration-300 ease-in-out">Home</li>
+          <li className="cursor-pointer py-2 px-8 rounded-sm hover:bg-slate-200 transition-all duration-300 ease-in-out">Courses</li>
+          <li className="cursor-pointer py-2 px-8 rounded-sm hover:bg-slate-200 transition-all duration-300 ease-in-out">Careers</li>
+          <li className="cursor-pointer py-2 px-8 rounded-sm hover:bg-slate-200 transition-all duration-300 ease-in-out">Blogs</li>
+          <li className="cursor-pointer py-2 px-8 rounded-sm hover:bg-slate-200 transition-all duration-300 ease-in-out">About Us</li>
+        </ul> */}
       </div>
 
       <div className="flex gap-2 items-center">

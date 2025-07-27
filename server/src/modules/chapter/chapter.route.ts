@@ -6,11 +6,15 @@ import {
   getChapterById,
   updateChapter,
   publishChapter,
+  createDirectUpload,
+  finalizeMuxUpload,
 } from "./chapter.controller";
 
 const router = express.Router();
 
 router.post("/create", authMiddleware, createChapter);
+router.post("/mux/upload-video", authMiddleware, createDirectUpload);
+router.post("/mux/upload-video/complete", authMiddleware, finalizeMuxUpload);
 router.put("/reorder/:id", authMiddleware, updatePosition);
 router
   .route("/:courseId/:id")

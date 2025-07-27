@@ -51,6 +51,7 @@ export interface ICourse {
   imageUrl?: string;
   price?: number;
   isPublished: boolean;
+  difficultyLevel?: string;
   chapters?: any[];
   outcomes?: string[];
   languages?: string[];
