@@ -28,5 +28,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "../server/mux.ts"]
+  "include": ["src", "../server/mux.ts", "../client/src/pages/Checkout.tsx"]
 }

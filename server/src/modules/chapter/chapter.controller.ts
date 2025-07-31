@@ -18,6 +18,7 @@ export const createChapter = async (
       authorId: (req as any).user.id,
       title: req.body.title,
       courseId: req.body.courseId,
+      moduleId: req.body.moduleId,
     };
 
     const newChapter = await ChapterServices.chapterCreationService(
@@ -32,6 +33,30 @@ export const createChapter = async (
     next(error);
   }
 };
+
+export const deleteChapter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    logger.info(
+      `Received Course deletion request : ${JSON.stringify(req.body)}`
+    );
+
+    const { courseId, moduleId, chapterId } = req.params;
+    const authorId = (req as any).user.id;
+
+    const chapter = await ChapterServices.deleteChapterService(courseId, moduleId, chapterId, authorId);
+    logger.info(`User deleted Chapter successfully: ${chapter}`);
+    ApiResponse.success(res, "Chapter deleted successfull", chapter, 200);
+
+  } catch (error: any) {
+    logger.error("Error in [ChapterDeletion]:", error);
+    next(error);
+  }
+};
+
 
 export const getChapterById = async (
   req: Request,
@@ -129,14 +154,13 @@ export const updatePosition = async (
       )} ${(req as any).user.id}`
     );
 
-    const { id: courseId } = req.params;
+    const { id: courseId, moduleId } = req.params;
     const { list: updateData } = req.body;
     const authorId = (req as any).user.id;
 
-    console.log("Update Data:", updateData, courseId, authorId);
-
     const course = await ChapterServices.updateChapterPositions(
       courseId,
+      moduleId,
       updateData,
       authorId
     );

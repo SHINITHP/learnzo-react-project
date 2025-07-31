@@ -1,5 +1,12 @@
 import type { RootState } from "@/redux/store";
-import type { IAttachment, ICourse, ICourseCreationResponse, ICourseByIDResponse, ICourseResponse, IUpdateCoursePayload } from "@/types";
+import type {
+  IAttachment,
+  ICourse,
+  ICourseCreationResponse,
+  ICourseByIDResponse,
+  ICourseResponse,
+  IUpdateCoursePayload,
+} from "@/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const courseApi = createApi({
@@ -57,9 +64,7 @@ export const courseApi = createApi({
         method: "PATCH",
         body: { publish },
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Course", id: id },
-      ],
+      invalidatesTags: (result, error, { id }) => [{ type: "Course", id: id }],
     }),
 
     updateCourse: builder.mutation<
@@ -73,6 +78,16 @@ export const courseApi = createApi({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Course", id }],
     }),
+    deleteCourse: builder.mutation<{ message: string }, string>({
+      query: (id) => ({
+        url: `/delete-course/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Course", id },
+        "Course",
+      ],
+    }),
   }),
 });
 
@@ -83,4 +98,5 @@ export const {
   useUpdateCourseMutation,
   useCreateAttachmentsMutation,
   useTogglePublishMutation,
+  useDeleteCourseMutation,
 } = courseApi;

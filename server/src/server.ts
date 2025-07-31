@@ -13,6 +13,7 @@ import courseRoutes from './modules/course/admin.course.routes';
 import categoryRoutes from './modules/category/category.route';
 import userCategoryRoutes from './modules/category/user.category.route';
 import chapterRoutes from './modules/chapter/chapter.route';
+import moduleRoute from './modules/module/module.route'
 import { errorHandler } from "./middleware/errorHandler";
 import cookieParser from "cookie-parser";
 import { uploadthingRouter } from "./utils/uploadthings";
@@ -45,6 +46,7 @@ app.use("/api/admin/courses", adminCourseRoutes);
 app.use("/api/user/courses", userCourseRoute);
 app.use("/api/admin/categories", categoryRoutes);
 app.use("/api/user/categories", userCategoryRoutes);
+app.use("/api/admin/modules", moduleRoute);
 app.use("/api/admin/chapter", chapterRoutes);
 
 //Error handling

@@ -1,30 +1,30 @@
 import { Banner } from "@/components/banner";
-import ChapterAccessForm from "@/components/chapter-access-form";
-import { ChapterActions } from "@/components/chapter-action";
-import ChapterDescriptionForm from "@/components/chapter-description-form";
-import ChapterTitleForm from "@/components/chapter-title-form";
+import ChapterForm from "@/components/chapter-form";
 import PageMeta from "@/components/common/PageMeta";
 import { IconBadge } from "@/components/icon-badge";
-import ChapterVideoForm from "@/components/video-form";
-// import ChapterVideoForm from "@/components/video-form";
-import { useGetChapterByIdQuery } from "@/services/chapterApi";
-import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
+import ModuleAccessForm from "@/components/Module/module-access-form";
+import { ModuleActions } from "@/components/Module/module-action";
+import ModuleTitleForm from "@/components/Module/module-title-form";
+import { useGetModulesByIdQuery } from "@/services/modulesApi";
+import {
+  ArrowLeft,
+  Eye,
+  LayoutDashboard,
+  ListChecks,
+  Video,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useNavigate, useParams } from "react-router-dom";
 
-const AddChapter = () => {
+const AddModules = () => {
   const navigate = useNavigate();
-  const { id, chapterId, moduleId } = useParams<{
-    id: string;
-    chapterId: string;
-    moduleId: string;
-  }>();
+  const { id, moduleId } = useParams<{ id: string; moduleId: string }>();
 
-  if (!id || !chapterId) navigate("/courses");
+  if (!id || !moduleId) navigate("/courses");
 
-  const { data, isLoading, error } = useGetChapterByIdQuery({
+  const { data, isLoading, error } = useGetModulesByIdQuery({
     courseId: id!,
-    chapterId: chapterId!,
+    moduleId: moduleId!,
   });
 
   if (isLoading) {
@@ -45,16 +45,15 @@ const AddChapter = () => {
 
   if (!data) navigate(`/courses/${id}`);
 
-  const chapter = data?.data;
+  const module = data?.data;
 
-  if (!chapter) {
+  if (!module) {
     navigate(`/courses/${id}`);
   }
 
   const requiredFields = [
-    chapter?.title,
-    chapter?.description,
-    chapter?.videoUrl,
+    module?.title,
+    module?.chapters.some((chapter) => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;
@@ -76,18 +75,18 @@ const AddChapter = () => {
         description="LearnEase admin edit Chapter page"
       />
       <div className="mt-16 rounded-2xl md:border border-gray-200 md:bg-white md:dark:border-gray-800 md:dark:bg-white/[0.03]">
-        <div className="rounded-2xl  ">
+        <div className="rounded-2xl">
           <div className="flex items-center justify-between ">
-            <div className="w-full">
+            <div className="w-full ">
               <Link
-                to={`/courses/${id}/module/${moduleId}`}
+                to={`/courses/${id}`}
                 className="inline-flex items-center text-sm text-white hover:text-muted-foreground px-6 mt-10"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to module setup
+                Back to course setup
               </Link>
 
-              {!chapter?.isPublished && (
+              {!module?.isPublished && (
                 <Banner
                   className="bg-amber-200 text-amber-900 mt-6"
                   variant="warning"
@@ -95,21 +94,20 @@ const AddChapter = () => {
                 />
               )}
 
-              <div className="flex items-center justify-between w-full  px-2 py-5 md:px-5 md:py-7 xl:px-6 xl:py-8">
+              <div className="flex items-center justify-between w-full px-2 py-5 md:px-5 md:py-7 xl:px-6 xl:py-8">
                 <div className="flex flex-col gap-y-2">
                   <h1 className="text-xl md:text-2xl font-medium">
-                    Chapter creation
+                    Module creation
                   </h1>
                   <span className="text-xs md:text-sm text-slate-700">
                     Complete all fields {completionText}
                   </span>
                 </div>
-                <ChapterActions
+                <ModuleActions
                   disabled={!isComplete}
                   courseId={id!}
-                  chapterId={chapterId!}
                   moduleId={moduleId!}
-                  isPublished={chapter?.isPublished || false}
+                  isPublished={module?.isPublished || false}
                 />
               </div>
             </div>
@@ -119,19 +117,13 @@ const AddChapter = () => {
               <div>
                 <div className="flex items-center gap-x-2">
                   <IconBadge icon={LayoutDashboard} />
-                  <h2 className="text-xl">Customize your chapter</h2>
+                  <h2 className="text-xl">Customize your Module</h2>
                 </div>
                 {/* chapter-title */}
-                <ChapterTitleForm
+                <ModuleTitleForm
                   initialData={data.data}
                   courseId={id!}
-                  chapterId={chapterId!}
-                />
-                {/* chapter-description */}
-                <ChapterDescriptionForm
-                  initialData={data.data}
-                  courseId={id!}
-                  chapterId={chapterId!}
+                  moduleId={moduleId!}
                 />
               </div>
               <div>
@@ -139,20 +131,20 @@ const AddChapter = () => {
                   <IconBadge icon={Eye} />
                   <h2 className="text-xl">Access Settings</h2>
                 </div>
-                <ChapterAccessForm
+                <ModuleAccessForm
                   initialData={data.data}
                   courseId={id!}
-                  chapterId={chapterId!}
+                  moduleId={moduleId!}
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center gap-x-2">
-                <IconBadge icon={Video} />
-                <h2 className="text-xl">Add a Video</h2>
+                <IconBadge icon={ListChecks} />
+                <h2 className="text-xl">Module Chapters</h2>
               </div>
-              <ChapterVideoForm initialData={data.data} />
+              <ChapterForm initialData={data.data} />
             </div>
           </div>
         </div>
@@ -161,4 +153,4 @@ const AddChapter = () => {
   );
 };
 
-export default AddChapter;
+export default AddModules;

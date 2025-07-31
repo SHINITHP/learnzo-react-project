@@ -11,6 +11,7 @@ const chapterSchema = new Schema<IChapter>(
     isFree: { type: Boolean, default: false },
     muxData: { type: Schema.Types.ObjectId, ref: "MuxData" },
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true },
+    moduleId: [{ type: Schema.Types.ObjectId, ref: "Module" }],
     userProgress: [{ type: Schema.Types.ObjectId, ref: "UserProgress" }],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
@@ -19,13 +20,29 @@ const chapterSchema = new Schema<IChapter>(
 );
 
 const videoSchema = new mongoose.Schema({
-  courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
-  chapterId: { type: mongoose.Schema.Types.ObjectId, ref: "Chapter", required: true },
+  courseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Course",
+    required: true,
+  },
+  chapterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Chapter",
+    required: true,
+  },
   assetId: { type: String, required: true },
   playbackId: { type: String },
-  status: { type: String, enum: ["waiting", "ready", "errored"], default: "waiting" },
-  uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  createdAt: { type: Date, default: Date.now }
+  status: {
+    type: String,
+    enum: ["waiting", "ready", "errored"],
+    default: "waiting",
+  },
+  uploadedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  createdAt: { type: Date, default: Date.now },
 });
 
 export const VideoModel = mongoose.model("Video", videoSchema);

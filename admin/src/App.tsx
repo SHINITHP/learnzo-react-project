@@ -11,6 +11,7 @@ import AddCourse from "./pages/AddCourse";
 import EditCourse from "./pages/EditCourse";
 import AddChapter from "./pages/AddEditChapter";
 import CoursesList from "./pages/CoursesList";
+import AddModules from "./pages/AddEditModules";
 
 function App() {
   return (
@@ -50,12 +51,16 @@ function App() {
               path="verified-customers"
               element={<h1 className="title">Verified Customers</h1>}
             />
-            <Route
-              path="courses"
-              element={<CoursesList />}
-            />
+            <Route path="courses" element={<CoursesList />} />
             <Route path="courses/:id" element={<EditCourse />} />
-            <Route path="courses/:id/chapters/:chapterId" element={<AddChapter />} />
+            <Route
+              path="courses/:id/module/:moduleId"
+              element={<AddModules />}
+            />
+            <Route
+              path="courses/:id/module/:moduleId/chapters/:chapterId"
+              element={<AddChapter />}
+            />
 
             <Route path="create-course" element={<AddCourse />} />
             <Route

@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import AttachmentForm from "@/components/attachment-form";
-import ChapterForm from "@/components/chapter-form";
 import PageMeta from "@/components/common/PageMeta";
 import { useEffect } from "react";
 import { Banner } from "@/components/banner";
@@ -26,6 +25,7 @@ import LanguageForm from "@/components/language-form";
 import HoursForm from "@/components/course-hours-form";
 import { Link } from "react-router-dom";
 import DifficultyLevelForm from "@/components/difficulty-level-form";
+import ModuleForm from "@/components/modules-form";
 
 const EditCourse = () => {
   const { id } = useParams<{ id: string }>();
@@ -71,7 +71,7 @@ const EditCourse = () => {
     course.hours,
     course.languages,
     course.outcomes,
-    course.chapters.some((chapter) => chapter.isPublished),
+    course.modules.some((module) => module.isPublished),
     course.attachments,
   ];
 
@@ -166,9 +166,10 @@ const EditCourse = () => {
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={ListChecks} />
-                <h2 className="text-xl">Course Chapters</h2>
+                <h2 className="text-xl">Course Modules</h2>
               </div>
-              <ChapterForm initialData={{ chapters: course.chapters }} />
+              {/* <ChapterForm initialData={{ chapters: course.chapters }} /> */}
+              <ModuleForm initialData={{ modules: course.modules }} />
             </div>
 
             <LearningOutcomesForm initialData={{ outcomes: course.outcomes }} />

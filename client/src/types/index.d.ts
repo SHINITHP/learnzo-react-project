@@ -42,6 +42,20 @@ export interface ISignUpResponse {
   };
 }
 
+export interface IChapter {
+  title: string;
+  description?: string;
+  videoUrl?: string;
+  position: number;
+  isPublished: boolean;
+  isFree: boolean;
+  muxData?: Types.ObjectId;
+  courseId: Types.ObjectId;
+  userProgress: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ICourse {
   _id: string;
   authorId: string;
@@ -52,7 +66,7 @@ export interface ICourse {
   price?: number;
   isPublished: boolean;
   difficultyLevel?: string;
-  chapters?: any[];
+  chapters?: IChapter[];
   outcomes?: string[];
   languages?: string[];
   hours?: string;

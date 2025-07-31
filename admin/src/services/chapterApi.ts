@@ -12,16 +12,16 @@ export const chapterApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Chapter", "Course"],
+  tagTypes: ["Chapter", "Course", "Module"],
   endpoints: (builder) => ({
     createChapter: builder.mutation<
       { success: boolean; message: string; data: IChapter[] },
-      { title: string; courseId: string }
+      { title: string; courseId: string; moduleId: string }
     >({
-      query: ({ courseId, title }) => ({
+      query: ({ courseId, title, moduleId }) => ({
         url: "/create",
         method: "POST",
-        body: { title, courseId },
+        body: { title, courseId, moduleId },
       }),
       invalidatesTags: (result, error, { courseId }) => [
         "Chapter",
@@ -30,7 +30,11 @@ export const chapterApi = createApi({
     }),
 
     uploadDataToMux: builder.mutation<
-      { success: boolean; message: string; data: { url: string; upload_id: string; } },
+      {
+        success: boolean;
+        message: string;
+        data: { url: string; upload_id: string };
+      },
       void
     >({
       query: () => ({
@@ -41,13 +45,17 @@ export const chapterApi = createApi({
     }),
 
     finalizeMuxUpload: builder.mutation<
-      { success: boolean; message: string; data: { asset_id: string; playback_id: string; } },
+      {
+        success: boolean;
+        message: string;
+        data: { asset_id: string; playback_id: string };
+      },
       { upload_id: string }
     >({
       query: ({ upload_id }) => ({
         url: "/mux/upload-video/complete",
         method: "POST",
-        body: { upload_id }
+        body: { upload_id },
       }),
     }),
 
@@ -92,16 +100,34 @@ export const chapterApi = createApi({
 
     updateChapterPositions: builder.mutation<
       { success: boolean; message: string; data: IChapter[] },
-      { courseId: string; list: { id: string; position: number }[] }
+      {
+        courseId: string;
+        moduleId: string;
+        list: { id: string; position: number }[];
+      }
     >({
-      query: ({ courseId, list }) => ({
-        url: `/reorder/${courseId}`,
+      query: ({ courseId, list, moduleId }) => ({
+        url: `/reorder/${courseId}/${moduleId}`,
         method: "PUT",
         body: { list },
       }),
       invalidatesTags: (result, error, { courseId }) => [
         "Chapter",
         { type: "Course", id: courseId },
+      ],
+    }),
+
+    deleteChapter: builder.mutation<
+      { message: string },
+      { courseId: string; moduleId: string; chapterId: string }
+    >({
+      query: ({ courseId, moduleId, chapterId }) => ({
+        url: `/${courseId}/module/${moduleId}/delete-chapter/${chapterId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, { moduleId }) => [
+        "Module",
+        { type: "Module", moduleId },
       ],
     }),
   }),
@@ -114,5 +140,6 @@ export const {
   useUpdateChapterMutation,
   useTogglePublishMutation,
   useUploadDataToMuxMutation,
-  useFinalizeMuxUploadMutation
+  useFinalizeMuxUploadMutation,
+  useDeleteChapterMutation,
 } = chapterApi;

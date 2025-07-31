@@ -85,9 +85,27 @@ export interface ChaptersListProps {
   onReorder: (updateData: { id: string; position: number }[]) => void;
   onEdit: (id: string) => void;
 }
+export interface ModulesListProps {
+  items: IModule[];
+  onReorder: (updateData: { id: string; position: number }[]) => void;
+  onEdit: (id: string) => void;
+}
 
 export interface ChapterFormProps {
   initialData: { chapters: IChapter[] };
+}
+
+export interface IModule {
+  _id: string;
+  title: string;
+  position: number;
+  isPublished?: boolean;
+  isFree: boolean;
+  chapters: IChapter[];
+}
+
+export interface ModuleFormProps {
+  initialData: { modules: IModule[] };
 }
 
 export interface FileUploadProps {
@@ -116,11 +134,12 @@ export interface ICourse {
   imageUrl?: string;
   price?: number;
   isPublished: boolean;
-  categoryId?: string | ICategory;
+  categoryId?: ICategory | null;
   difficultyLevel?: string;
   outcomes?: [];
   languages?: string[];
   hours?: string;
+  modules: IModule[] | [];
   chapters: IChapter[];
   attachments: IAttachment[];
   purchases: string[];
@@ -196,7 +215,6 @@ export interface IMuxData {
   status: "waiting" | "ready" | "errored";
   uploadedBy: Types.ObjectId;
   createdAt?: Date;
-
 }
 
 export interface IChapter {

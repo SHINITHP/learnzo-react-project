@@ -4,6 +4,7 @@ import { IChapter, ICourse } from "../../types";
 import ApiError from "../../utils/apiError";
 import { Chapter } from "../chapter/chapter.model";
 import mongoose from "mongoose";
+import { Module } from "../module/module.model";
 
 class CourseService {
   static async createCourseService(courseData: {
@@ -18,6 +19,7 @@ class CourseService {
     logger.info(`Course created: ${course.title}`);
     return course;
   }
+  
 
   static async createAttachmentService(
     AttachmentsData: {
@@ -74,7 +76,8 @@ class CourseService {
   static async getCourseByIdService(data: { id: string; userId: string }) {
     const course = await Course.findOne({ _id: data.id, authorId: data.userId })
       .populate("attachments")
-      .populate("chapters");
+      .populate("chapters")
+      .populate("modules");
 
     if (!course) throw new ApiError(404, "Course not found or unauthorized");
 
@@ -83,11 +86,8 @@ class CourseService {
   }
 
   static async getCoursesService() {
-    const courses = await Course.find({ isPublished: true })
-      .populate({
-        path: "chapters",
-        match: { isPublished: true },
-      })
+    const courses = await Course.find({})
+      .populate('chapters')
       .populate("attachments")
       .populate("categoryId", "name")
       .populate("authorId", "fullName email")
@@ -116,13 +116,14 @@ class CourseService {
     return course;
   }
 
-  static async deleteCourseService(id: string, userId: string) {
-    const course = await Course.findOne({ _id: id, userId });
+  static async deleteCourseService(id: string, authorId: string) {
+    const course = await Course.findOne({ _id: id, authorId });
     if (!course) {
       throw new ApiError(404, "Course not found or unauthorized");
     }
     // Cascade delete related documents
     await Attachment.deleteMany({ courseId: id });
+    await Module.deleteMany({ courseId: id });
     await Chapter.deleteMany({ courseId: id });
     // await Purchase.deleteMany({ courseId: id });
     await course.deleteOne();

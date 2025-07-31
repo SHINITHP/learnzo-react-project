@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import CourseService from "./course.service";
+import CourseService from "./admin.course.service";
 import logger from "../../utils/logger";
 import ApiResponse from "../../utils/apiResponse";
 import UserCourseService from "./user.course.service";

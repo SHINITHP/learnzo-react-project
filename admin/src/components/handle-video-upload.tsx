@@ -2,9 +2,9 @@ import { AlertCircleIcon, VideoIcon, XIcon } from "lucide-react";
 import { useRef, useState, type DragEvent, type ChangeEvent } from "react";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
-import { uploadToCloudinary } from "@/utils/cloudinary";
 import { useParams } from "react-router-dom";
 import { useUpdateChapterMutation } from "@/services/chapterApi";
+import { uploadToCloudinary } from "@/utils/cloudinary";
 
 export interface VideoUploadProps {
   initialData: {
@@ -16,7 +16,10 @@ export interface VideoUploadProps {
 export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
   const maxSizeMB = 50; // Increased for videos
   const maxSize = maxSizeMB * 1024 * 1024;
-  const { id: courseId, chapterId } = useParams<{ id: string; chapterId: string; }>();
+  const { id: courseId, chapterId } = useParams<{
+    id: string;
+    chapterId: string;
+  }>();
   const [updateChapter, { isLoading }] = useUpdateChapterMutation();
 
   const [file, setFile] = useState<File | null>(null);
@@ -26,6 +29,7 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleUpload = async () => {
     if (!file) {
@@ -35,7 +39,13 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
 
     try {
       setIsUploading(true);
-      const uploadedUrl = await uploadToCloudinary(file, "video"); // Changed to video upload
+      setUploadProgress(0);
+
+      const uploadedUrl = await uploadToCloudinary({
+        file,
+        resourceType: "video",
+        onProgress: (percent) => setUploadProgress(percent),
+      });
       setPreviewUrl(uploadedUrl);
       setIsUploaded(true);
 
@@ -166,6 +176,15 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
                 src={previewUrl}
               />
               <div className="absolute flex flex-col inset-0 items-center justify-center">
+                {isUploading && (
+                  <div className="w-[60%] bg-muted rounded-full h-2 mt-2 overflow-hidden">
+                    <div
+                      className="bg-blue-600 h-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                )}
+
                 <p className="mb-1.5 text-xs md:text-sm font-medium">
                   Your video is ready — click Upload to save it
                 </p>

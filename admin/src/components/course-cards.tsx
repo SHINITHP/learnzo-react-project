@@ -10,10 +10,11 @@ const CourseCard = ({
   _id,
   title,
   imageUrl,
-  chapters,
+  modules = [],
   categoryId,
   price,
-  hours = "8 weeks",
+  isPublished,
+  hours = "Not defined",
 }: ICourse) => {
   const navigate = useNavigate();
   const formatPrice = (price: number) => {
@@ -37,15 +38,22 @@ const CourseCard = ({
           
           {/* Category badge */}
           <div className="absolute top-3 left-3">
-            <Badge className={`border-0 bg-slate-800 text-white font-medium text-xs shadow-sm`}>
+            <Badge className={`border-0 bg-slate-900 text-white font-medium text-xs shadow-sm hover:bg-slate-800`}>
               {categoryId?.name}
             </Badge>
           </div>
           
           {/* Price badge */}
           <div className="absolute top-3 right-3">
-            <Badge className={`${price === 0 ? 'bg-green-500 hover:bg-green-600' : 'bg-slate-900 hover:bg-primary/90'} text-white border-0 font-bold text-sm shadow-sm`}>
+            <Badge className={`${price === 0 ? 'bg-green-500 hover:bg-green-600' : 'bg-slate-900 hover:bg-slate-800'} text-white border-0 font-bold text-sm shadow-sm`}>
               {formatPrice(price || 0)}
+            </Badge>
+          </div>
+
+          {/* published badge */}
+          <div className="absolute bottom-3 left-3">
+            <Badge className={`${isPublished ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white border-0 font-bold text-xs shadow-sm`}>
+              {isPublished ? "Published" : "Not Published"}
             </Badge>
           </div>
         </div>
@@ -62,7 +70,7 @@ const CourseCard = ({
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div className="flex items-center gap-1 overflow-hidden">
               <BookOpen className="h-4 w-4 flex-shrink-0" />
-              <span className="font-medium truncate">{chapters.length} chapters</span>
+              <span className="font-medium truncate">{modules.length} modules</span>
             </div>
             <div className="flex items-center gap-1 overflow-hidden">
               <Clock className="h-4 w-4 flex-shrink-0" />

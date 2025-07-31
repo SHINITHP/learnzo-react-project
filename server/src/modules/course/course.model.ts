@@ -12,6 +12,7 @@ const courseSchema = new Schema<ICourse>(
     categoryId: { type: Schema.Types.ObjectId, ref: "Category" },
     difficultyLevel: { type: String },
     chapters: [{ type: Schema.Types.ObjectId, ref: "Chapter" }],
+    modules: [{ type: Schema.Types.ObjectId, ref: "Module" }],
     outcomes: [{ type: String }],
     languages: [{ type: String }],
     hours: { type: String },

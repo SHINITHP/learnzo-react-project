@@ -3,7 +3,8 @@ import toast from "react-hot-toast";
 import { Button } from "./ui/button";
 import { Trash } from "lucide-react";
 import { ConfirmModal } from "./confirm-modal";
-import { useTogglePublishMutation } from "@/services/courseApi";
+import { useDeleteCourseMutation, useTogglePublishMutation } from "@/services/courseApi";
+import { useNavigate } from "react-router-dom";
 
 interface CourseActionsProps {
   disabled: boolean;
@@ -17,9 +18,10 @@ export const CourseActions = ({
   isPublished,
 }: CourseActionsProps) => {
   const [tooglePublish] = useTogglePublishMutation();
+  const [deleteCourse] = useDeleteCourseMutation();
+  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-  console.log(courseId);
   const onClick = async () => {
     try {
       const response = await tooglePublish({
@@ -39,6 +41,9 @@ export const CourseActions = ({
   const onDelete = async () => {
     try {
       setIsLoading(true);
+      await deleteCourse(courseId!).unwrap();
+      navigate('/courses')
+      toast.success("Course Deleted Successful");
     } catch (error) {
       toast.error("Something went wrong");
     } finally {

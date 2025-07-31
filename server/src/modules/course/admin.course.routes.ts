@@ -2,11 +2,12 @@ import express from "express";
 import {
   createAttachments,
   createCourse,
+  deleteCourse,
   getCourseById,
   getCourses,
   publishChapter,
   updateCourse,
-} from "./course.controller";
+} from "./admin.course.controller";
 import { authMiddleware } from "../../middleware/auth";
 
 const router = express.Router();
@@ -19,5 +20,7 @@ router
   .get(authMiddleware, getCourseById)
   .patch(authMiddleware, updateCourse);
 router.patch("/:id/publish", authMiddleware, publishChapter);
+router.delete("/delete-course/:id", authMiddleware, deleteCourse)
+
 
 export default router;

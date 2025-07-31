@@ -9,6 +9,7 @@ import {
   Download,
   Calendar,
   Heart,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -334,7 +335,10 @@ const CourseDetails = () => {
                 </div>
                 <div className="space-y-4">
                   {course.chapters?.map((chapter, index) => (
-                    <Card key={index} className="bg-[#f9fcf2] border border-gray-300">
+                    <Card
+                      key={index}
+                      className="bg-[#f9fcf2] border border-gray-300"
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
@@ -351,7 +355,11 @@ const CourseDetails = () => {
                             </div>
                           </div>
                           <Button variant="ghost" size="sm">
-                            <Play className="w-4 h-4" />
+                            {chapter.isFree ? (
+                              <Play className="w-4 h-4" />
+                            ) : (
+                              <Lock className="w-4 h-4" />
+                            )}
                           </Button>
                         </div>
                         <div className="mt-3 flex flex-wrap gap-2">

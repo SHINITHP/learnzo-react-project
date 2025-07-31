@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import CourseService from "./course.service";
+import CourseService from "./admin.course.service";
 import logger from "../../utils/logger";
 import ApiResponse from "../../utils/apiResponse";
 import ApiError from "../../utils/apiError";
@@ -28,6 +28,29 @@ export const createCourse = async (
   }
 };
 
+export const deleteCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    logger.info(
+      `Received Course deletion request : ${JSON.stringify(req.body)}`
+    );
+
+    const { id } = req.params;
+    const authorId = (req as any).user.id;
+
+    const course = await CourseService.deleteCourseService(id, authorId);
+    logger.info(`User deleted course successfully: ${course}`);
+    ApiResponse.success(res, "Course deleted successfull", course, 200);
+
+  } catch (error: any) {
+    logger.error("Error in [CourseDeletion]:", error);
+    next(error);
+  }
+};
+
 export const publishChapter = async (
   req: Request,
   res: Response,
@@ -47,18 +70,25 @@ export const publishChapter = async (
     const course = await CourseService.togglePublishChapterService({
       id,
       authorId,
-      publish
+      publish,
     });
 
-    logger.info(`Course successfully ${publish? "published" : "unpublished"}: ${course.title}`);
-    ApiResponse.success(res, `Course ${publish? "published" : "unpublished"} successful`, course, 200);
-    
+    logger.info(
+      `Course successfully ${publish ? "published" : "unpublished"}: ${
+        course.title
+      }`
+    );
+    ApiResponse.success(
+      res,
+      `Course ${publish ? "published" : "unpublished"} successful`,
+      course,
+      200
+    );
   } catch (error) {
     logger.error("Error in [CoursePublish]:", error);
     next(error);
   }
 };
-
 
 export const createAttachments = async (
   req: Request,
@@ -82,17 +112,17 @@ export const createAttachments = async (
       authorId,
     }));
 
-    const attachmentIds = await CourseService.createAttachmentService(AttachmentsData);
+    const attachmentIds = await CourseService.createAttachmentService(
+      AttachmentsData
+    );
     logger.info(`Attachment created successfully: ${attachmentIds}`);
 
     res.json({ ids: attachmentIds });
-
   } catch (error: any) {
     logger.error("Error in [AttachmentCreation]:", error);
     next(error);
   }
 };
-
 
 export const getCourseById = async (
   req: Request,
@@ -152,7 +182,7 @@ export const updateCourse = async (
       updates,
       userId,
     });
-    
+
     logger.info(`course updated successfull: ${course}`);
     ApiResponse.success(res, "Course updated successfull", course, 200);
   } catch (error) {

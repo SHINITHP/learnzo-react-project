@@ -2,9 +2,9 @@ import { VideoIcon, Pencil, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { AspectRatio } from "./ui/aspect-ratio";
-// import { VideoUpload } from "./handle-video-upload";
+import { VideoUpload } from "./handle-video-upload";
 import type { IMuxData } from "@/types";
-import { VideoUpload } from "./mux-video-upload";
+// import { VideoUpload } from "./mux-video-upload";
 import { MuxVideoPlayer } from "./mux-video-player";
 
 export interface ChapterVideoFormProps {
@@ -53,8 +53,8 @@ const ChapterVideoForm = ({ initialData }: ChapterVideoFormProps) => {
         ) : (
           <div className="relative aspect-video mt-2">
             <AspectRatio ratio={16 / 9} className="bg-muted rounded-lg">
-              <MuxVideoPlayer
-                playbackId={initialData.videoUrl}
+              <video
+                  src={initialData.videoUrl}
                 className="absolute inset-0 h-full w-full object-cover rounded-lg"
               />
             </AspectRatio>
@@ -66,7 +66,7 @@ const ChapterVideoForm = ({ initialData }: ChapterVideoFormProps) => {
           <VideoUpload
             initialData={{
               videoUrl: initialData.videoUrl || "",
-              muxData: initialData.muxData ?? null,
+              // muxData: initialData.muxData ?? null,
             }}
             isEditing={isEditing}
           />

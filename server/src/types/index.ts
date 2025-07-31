@@ -18,7 +18,6 @@ export interface IVerifyOTP {
   token: string;
 }
 
-
 export interface ICourse extends Document {
   authorId: Types.ObjectId;
   title: string;
@@ -29,6 +28,7 @@ export interface ICourse extends Document {
   categoryId?: Types.ObjectId;
   difficultyLevel?: string;
   chapters: Types.ObjectId[];
+  modules: Types.ObjectId[];
   outcomes: string[];
   languages: String[];
   hours: string;
@@ -51,6 +51,17 @@ export interface IAttachment extends Document {
   updatedAt: Date;
 }
 
+export interface IModule extends Document {
+  courseId: Types.ObjectId;
+  title: string;
+  position: number;
+  isPublished?: boolean;
+  isFree: boolean;
+  chapters: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IChapter extends Document {
   title: string;
   description?: string;
@@ -60,6 +71,7 @@ export interface IChapter extends Document {
   isFree: boolean;
   muxData?: Types.ObjectId;
   courseId: Types.ObjectId;
+  moduleId: Types.ObjectId;
   userProgress: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;

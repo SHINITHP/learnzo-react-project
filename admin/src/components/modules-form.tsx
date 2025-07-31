@@ -9,31 +9,28 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import { cn } from "../utils/cn";
-import type { ChapterFormProps, IChapter } from "@/types";
-import { ChaptersList } from "./chapter-list";
-import {
-  useCreateChapterMutation,
-  useUpdateChapterPositionsMutation,
-} from "@/services/chapterApi";
+import type { ModuleFormProps, IModule } from "@/types";
+import { ModulesList } from "./modules-list";
+import { useCreateModulesMutation, useUpdateModulesPositionsMutation } from "@/services/modulesApi";
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Chapter title is required" }),
 });
 
-const ChapterForm = ({ initialData }: ChapterFormProps) => {
-  const { id, moduleId } = useParams<{ id: string; moduleId: string; }>();
+const ModuleForm = ({ initialData }: ModuleFormProps) => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [createChapter] = useCreateChapterMutation();
-  const [reorderChapter] = useUpdateChapterPositionsMutation();
+  const [createModules] = useCreateModulesMutation();
+  const [reorderChapter] = useUpdateModulesPositionsMutation();
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [chapters, setChapters] = useState<IChapter[]>(
-    initialData.chapters || []
+  const [modules, setModules] = useState<IModule[]>(
+    initialData.modules || []
   );
 
   useEffect(() => {
-    setChapters(initialData.chapters || []);
-  }, [initialData.chapters]);
+    setModules(initialData.modules || []);
+  }, [initialData.modules]);
 
   const toggleCreating = () => {
     setIsCreating((current) => !current);
@@ -51,16 +48,15 @@ const ChapterForm = ({ initialData }: ChapterFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { data } = await createChapter({
+      const { data } = await createModules({
         courseId: id!,
-        moduleId: moduleId!,
         title: values.title,
       }).unwrap();
-      setChapters((prev) => [
+      setModules((prev) => [
         ...prev,
         ...(Array.isArray(data) ? data : [data]),
       ]);
-      toast.success("Chapter created successfully");
+      toast.success("Module created successfully");
       toggleCreating();
     } catch (error) {
       console.error(error);
@@ -71,8 +67,8 @@ const ChapterForm = ({ initialData }: ChapterFormProps) => {
   const onReorder = async (updateData: { id: string; position: number }[]) => {
     try {
       setIsUpdating(true);
-      await reorderChapter({ courseId: id!, moduleId: moduleId!, list: updateData }).unwrap();
-      toast.success("Chapters reordered successfully");
+      await reorderChapter({ courseId: id!, list: updateData }).unwrap();
+      toast.success("Modules reordered successfully");
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong");
@@ -81,8 +77,8 @@ const ChapterForm = ({ initialData }: ChapterFormProps) => {
     }
   };
 
-  const onEdit = (chapterId: string) => {
-    navigate(`/courses/${id}/module/${moduleId}/chapters/${chapterId}`);
+  const onEdit = (moduleId: string) => {
+    navigate(`/courses/${id}/module/${moduleId}`);
   };
 
   return (
@@ -93,14 +89,14 @@ const ChapterForm = ({ initialData }: ChapterFormProps) => {
         </div>
       )}
       <div className="font-medium flex items-center justify-between">
-        Course chapters
+        Course Modules
         <Button onClick={toggleCreating} variant="ghost">
           {isCreating ? (
             <>Cancel</>
           ) : (
             <>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add a chapter
+              <PlusCircle className="h-4 w-4" />
+              Add a Module
             </>
           )}
         </Button>
@@ -138,24 +134,24 @@ const ChapterForm = ({ initialData }: ChapterFormProps) => {
         <div
           className={cn(
             "text-sm mt-2",
-            !initialData.chapters.length && "text-slate-500 italic"
+            !initialData.modules?.length && "text-slate-500 italic"
           )}
         >
-          {!chapters.length && "No chapters"}
-          <ChaptersList
+          {!modules.length && "No Modules"}
+          <ModulesList
             onEdit={onEdit}
             onReorder={onReorder}
-            items={chapters}
+            items={modules}
           />
         </div>
       )}
       {!isCreating && (
         <p className="text-sm text-muted-foreground mt-4">
-          Drag and drop to reorder chapters
+          Drag and drop to reorder Modules
         </p>
       )}
     </div>
   );
 };
 
-export default ChapterForm;
+export default ModuleForm;

@@ -5,10 +5,12 @@ import { Chapter } from "./chapter.model";
 import logger from "../../utils/logger";
 import { IChapter } from "../../types";
 import { mux } from "../../utils/mux";
+import { Module } from "../module/module.model";
 
 export default class ChapterServices {
   static async chapterCreationService(chapterData: {
     courseId: string;
+    moduleId: string;
     title: string;
     authorId: string;
   }) {
@@ -18,13 +20,6 @@ export default class ChapterServices {
       _id: new mongoose.Types.ObjectId(chapterData.courseId),
       authorId: chapterData.authorId,
     }).lean();
-
-    console.log(
-      "authorId :",
-      chapterData.courseId,
-      chapterData.authorId,
-      courseOwner
-    );
 
     if (!courseOwner) {
       throw new ApiError(401, "Unauthorized or chapter not found");
@@ -38,11 +33,16 @@ export default class ChapterServices {
     const chapter = await Chapter.create({
       title: chapterData.title,
       courseId: chapterData.courseId,
+      moduleId: chapterData.moduleId,
       position: newPosition,
     });
 
-    const updateResult = await Course.updateOne(
-      { _id: chapterData.courseId },
+    // const updateResult = await Course.updateOne(
+    //   { _id: chapterData.courseId },
+    //   { $push: { chapters: chapter._id } }
+    // );
+    const updateResult = await Module.updateOne(
+      { _id: chapterData.moduleId },
       { $push: { chapters: chapter._id } }
     );
 
@@ -50,6 +50,42 @@ export default class ChapterServices {
       throw new ApiError(500, "Failed to update course with new chapter");
     }
 
+    return chapter;
+  }
+
+  static async deleteChapterService(
+    courseId: string,
+    moduleId: string,
+    chapterId: string,
+    authorId: string
+  ) {
+    const course = await Course.findOne({ _id: courseId, authorId });
+    if (!course) {
+      throw new ApiError(404, "Course not found or unauthorized");
+    }
+
+    const module = await Module.findOne({ _id: moduleId, courseId: courseId });
+    if (!module) {
+      throw new ApiError(404, "Module not found or unauthorized");
+    }
+
+    const chapter = await Chapter.findOne({
+      _id: chapterId,
+      courseId: courseId,
+      moduleId: moduleId,
+    });
+    if (!chapter) {
+      throw new ApiError(404, "Chapter not found or unauthorized");
+    }
+
+    await chapter.deleteOne();
+
+    module.chapters = module.chapters.filter(
+      (id) => id.toString() !== chapterId
+    );
+    await module.save();
+
+    logger.info(`Chapter deleted: ${chapter.title}`);
     return chapter;
   }
 
@@ -188,6 +224,7 @@ export default class ChapterServices {
 
   static async updateChapterPositions(
     courseId: string,
+    moduleId: string,
     updateData: { id: string; position: number }[],
     authorId: string
   ) {
@@ -200,6 +237,11 @@ export default class ChapterServices {
         throw new ApiError(401, "Course not found or unauthorized");
       }
 
+      const module = await Module.findById(moduleId);
+      if (!module) {
+        throw new ApiError(401, "Module not found or unauthorized");
+      }
+
       // Update chapter positions
       for (const { id, position } of updateData) {
         await Chapter.findByIdAndUpdate(id, { position }, { new: true });
@@ -209,8 +251,8 @@ export default class ChapterServices {
       const sortedChapters = updateData
         .sort((a, b) => a.position - b.position)
         .map(({ id }) => new mongoose.Types.ObjectId(id));
-      course.chapters = sortedChapters;
-      await course.save();
+      module.chapters = sortedChapters;
+      await module.save();
 
       logger.info(`Reordered chapters for course ${courseId}`);
       return course.populate("chapters");

@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import AppLayout from "./layout/AppLayout";
 import CoursesDetailsPage from "./pages/CoursesDetailsPage";
 import CoursesList from "./components/course-lists";
+import Checkout from "./pages/Checkout";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route element={<AppLayout />}>
             <Route index path="/" element={<Home />} />
             <Route index path="/course/:id" element={<CoursesDetailsPage />} />
+            <Route index path="/checkout" element={<Checkout />} />
             <Route index path="/courses" element={<CoursesList />} />
           </Route>
         </Routes>
