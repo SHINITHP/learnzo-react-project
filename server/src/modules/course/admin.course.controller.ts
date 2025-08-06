@@ -51,23 +51,24 @@ export const deleteCourse = async (
   }
 };
 
-export const publishChapter = async (
+export const publishCourse = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     logger.info(
-      `Received Chapter updation request: ${JSON.stringify(req.params.id)} ${
+      `Received Course publish updation request: ${JSON.stringify(req.params.id)} ${
         (req as any).user.id
       }`
     );
 
     const { id } = req.params;
     const authorId = (req as any).user.id;
+    console.log("authorId", authorId)
     const { publish } = req.body;
 
-    const course = await CourseService.togglePublishChapterService({
+    const course = await CourseService.togglePublishCourseService({
       id,
       authorId,
       publish,

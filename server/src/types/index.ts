@@ -18,6 +18,33 @@ export interface IVerifyOTP {
   token: string;
 }
 
+
+export interface IModule extends Document {
+  courseId: Types.ObjectId;
+  title: string;
+  position: number;
+  isPublished?: boolean;
+  isFree: boolean;
+  chapters: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IChapter extends Document {
+  title: string;
+  description?: string;
+  videoUrl?: string;
+  position: number;
+  isPublished: boolean;
+  isFree: boolean;
+  muxData?: Types.ObjectId;
+  courseId: Types.ObjectId;
+  moduleId: Types.ObjectId;
+  userProgress: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ICourse extends Document {
   authorId: Types.ObjectId;
   title: string;
@@ -47,32 +74,6 @@ export interface IAttachment extends Document {
   name: string;
   url: string;
   courseId: Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface IModule extends Document {
-  courseId: Types.ObjectId;
-  title: string;
-  position: number;
-  isPublished?: boolean;
-  isFree: boolean;
-  chapters: Types.ObjectId[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface IChapter extends Document {
-  title: string;
-  description?: string;
-  videoUrl?: string;
-  position: number;
-  isPublished: boolean;
-  isFree: boolean;
-  muxData?: Types.ObjectId;
-  courseId: Types.ObjectId;
-  moduleId: Types.ObjectId;
-  userProgress: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }

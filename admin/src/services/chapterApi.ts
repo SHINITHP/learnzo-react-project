@@ -1,17 +1,10 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "@/redux/store";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import type { IChapter, IUpdateCoursePayload } from "@/types";
+import baseQueryWithReauth from "@/redux/baseQuery";
 
 export const chapterApi = createApi({
   reducerPath: "chapterApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api/admin/chapter",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Chapter", "Course", "Module"],
   endpoints: (builder) => ({
     createChapter: builder.mutation<
@@ -19,7 +12,7 @@ export const chapterApi = createApi({
       { title: string; courseId: string; moduleId: string }
     >({
       query: ({ courseId, title, moduleId }) => ({
-        url: "/create",
+        url: "/chapter/create",
         method: "POST",
         body: { title, courseId, moduleId },
       }),
@@ -38,7 +31,7 @@ export const chapterApi = createApi({
       void
     >({
       query: () => ({
-        url: "/mux/upload-video",
+        url: "/chapter/mux/upload-video",
         method: "POST",
         body: {},
       }),
@@ -53,7 +46,7 @@ export const chapterApi = createApi({
       { upload_id: string }
     >({
       query: ({ upload_id }) => ({
-        url: "/mux/upload-video/complete",
+        url: "/chapter/mux/upload-video/complete",
         method: "POST",
         body: { upload_id },
       }),
@@ -64,7 +57,7 @@ export const chapterApi = createApi({
       { id: string; courseId: string; updates: IUpdateCoursePayload }
     >({
       query: ({ id, courseId, updates }) => ({
-        url: `/${courseId}/${id}`,
+        url: `/chapter/${courseId}/${id}`,
         method: "PUT",
         body: updates,
       }),
@@ -76,7 +69,7 @@ export const chapterApi = createApi({
       { chapterId: string; courseId: string; publish: boolean }
     >({
       query: ({ chapterId, courseId, publish }) => ({
-        url: `/${courseId}/${chapterId}/publish`,
+        url: `/chapter/${courseId}/${chapterId}/publish`,
         method: "PATCH",
         body: { publish },
       }),
@@ -90,7 +83,7 @@ export const chapterApi = createApi({
       { chapterId: string; courseId: string }
     >({
       query: ({ chapterId, courseId }) => ({
-        url: `/${courseId}/${chapterId}`,
+        url: `/chapter/${courseId}/${chapterId}`,
         method: "GET",
       }),
       providesTags: (result, error, { chapterId }) => [
@@ -107,7 +100,7 @@ export const chapterApi = createApi({
       }
     >({
       query: ({ courseId, list, moduleId }) => ({
-        url: `/reorder/${courseId}/${moduleId}`,
+        url: `/chapter/reorder/${courseId}/${moduleId}`,
         method: "PUT",
         body: { list },
       }),
@@ -122,7 +115,7 @@ export const chapterApi = createApi({
       { courseId: string; moduleId: string; chapterId: string }
     >({
       query: ({ courseId, moduleId, chapterId }) => ({
-        url: `/${courseId}/module/${moduleId}/delete-chapter/${chapterId}`,
+        url: `/chapter/${courseId}/module/${moduleId}/delete-chapter/${chapterId}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, { moduleId }) => [

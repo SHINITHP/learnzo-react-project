@@ -4,6 +4,6 @@ import { uploadthingRouter } from '../../utils/uploadthings';
 const router = Router();
 
 router.post('/sign-in', signInAdmin)
-router.post('/refreshToken', refreshToken);
+router.get('/refresh-token', refreshToken);
 
 export default router;

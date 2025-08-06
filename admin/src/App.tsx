@@ -2,22 +2,27 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/theme-context";
 import Layout from "./layouts/layout";
 import DashboardPage from "./pages/Dashboard";
-
 import { ScrollToTop } from "@/components/common/ScrollToTop";
 import SignIn from "./pages/SignIn";
-import AuthCheck from "./hooks/AuthCheck";
+// import AuthCheck from "./hooks/AuthCheck";
 import RequireAuth from "./components/common/RequiredAuth";
 import AddCourse from "./pages/AddCourse";
 import EditCourse from "./pages/EditCourse";
 import AddChapter from "./pages/AddEditChapter";
 import CoursesList from "./pages/CoursesList";
 import AddModules from "./pages/AddEditModules";
+import { useCrossTabLogout } from "./hooks/useCrossTabLogout";
+
+function CrossTabLogoutHandler() {
+  useCrossTabLogout();
+  return null;
+}
 
 function App() {
   return (
     <ThemeProvider storageKey="theme">
       <Router>
-        <AuthCheck />
+        <CrossTabLogoutHandler />
         <ScrollToTop />
         <Routes>
           <Route path="/admin/sign-in" element={<SignIn />} />

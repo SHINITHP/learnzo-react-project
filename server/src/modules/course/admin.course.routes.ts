@@ -5,10 +5,10 @@ import {
   deleteCourse,
   getCourseById,
   getCourses,
-  publishChapter,
+  publishCourse,
   updateCourse,
 } from "./admin.course.controller";
-import { authMiddleware } from "../../middleware/auth";
+import { authMiddleware } from "../../middleware/auth.middleware";
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router
   .route("/:id")
   .get(authMiddleware, getCourseById)
   .patch(authMiddleware, updateCourse);
-router.patch("/:id/publish", authMiddleware, publishChapter);
+router.patch("/:id/publish", authMiddleware, publishCourse);
 router.delete("/delete-course/:id", authMiddleware, deleteCourse)
 
 

@@ -1,8 +1,12 @@
 import { useEffect, useState, type FC } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { Bell, ChevronsLeft, Moon, Search, Sun } from "lucide-react";
-import profileImg from "@/assets/profile-image.jpg";
 import { useSearchParams } from "react-router-dom";
+import { ProfileButton } from "@/components/profile-button";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/slices/authSlice";
+import profileImg from "@/assets/profile-image.jpg";
+
 
 interface HeaderProps {
   collapsed: boolean;
@@ -13,6 +17,10 @@ export const Header: FC<HeaderProps> = ({ collapsed, setCollapsed }) => {
   const { theme, setTheme } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
   const [input, setInput] = useState(searchParams.get("search") || "");
+  // const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -65,10 +73,15 @@ export const Header: FC<HeaderProps> = ({ collapsed, setCollapsed }) => {
           <Bell size={20} />
         </button>
         <button className="size-10 overflow-hidden rounded-full">
-          <img
-            src={profileImg}
-            alt="profile image"
-            className="size-full object-cover"
+          <ProfileButton
+            name="Shinith N"
+            email="shinith@example.com"
+            avatarUrl={profileImg}
+            onProfile={() => {
+              console.log("Go to profile");
+            }}
+            onSettings={() => console.log("Go to settings")}
+            onLogout={() => dispatch(logout())}
           />
         </button>
       </div>

@@ -1,129 +1,228 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import logger from '../utils/logger';
-import { Category } from '../modules/category/category.model';
-import { Course } from '../modules/course/course.model';
-import { Chapter } from '../modules/chapter/chapter.model';
+import mongoose, { Types } from "mongoose";
+import dotenv from "dotenv";
+import { Module } from "../modules/module/module.model";
+import { Course } from "../modules/course/course.model";
+import { Chapter } from "../modules/chapter/chapter.model";
+import { IChapter } from "../types";
 
 dotenv.config();
-
-const categories = [
-  { name: 'Programming' },
-  { name: 'Data Science' },
-  { name: 'Web Development' },
-  { name: 'Machine Learning' },
-  { name: 'Design' },
-  { name: 'Business' },
-];
-
-async function seedCategories() {
-  try {
-    await mongoose.connect(process.env.MONGO_URI as string);
-    logger.info('Connected to MongoDB');
-
-    await Category.deleteMany({});
-    logger.info('Cleared existing categories');
-
-    await Category.insertMany(categories);
-    logger.info('Inserted sample categories');
-
-    await mongoose.disconnect();
-    logger.info('Disconnected from MongoDB');
-  } catch (error) {
-    logger.error('Error seeding categories:', error);
-    process.exit(1);
-  }
-}
-
-// seedCategories();
-
 async function seed() {
   try {
-    await mongoose.connect(process.env.MONGO_URI as string); // replace with your actual DB URI
+    await mongoose.connect(process.env.MONGO_URI as string);
+    console.log("✅ Connected to DB");
 
-    const coursesData = [
+    const authorId = new Types.ObjectId("6858f3d2160b1d15c8c0fa48");
+
+    const courseData = [
       {
-        title: "Mastering JavaScript Fundamentals",
-        description: "Learn the core principles of modern JavaScript.",
-        authorId: new mongoose.Types.ObjectId(),
-        imageUrl: "https://placehold.co/600x400",
-        price: 1999,
-        categoryId: new mongoose.Types.ObjectId(),
-        isPublished: true,
+        title: "Frontend Mastery with React",
+        description: "Deep dive into modern React development.",
         outcomes: [
-          "Understand variable scoping and hoisting clearly",
-          "Master array and object manipulation techniques",
-          "Build real-world projects using ES6+ features",
-          "Understand asynchronous JavaScript and promises",
-          "Learn DOM manipulation and event handling",
-          "Gain clarity on closures and functional programming",
+          "Build reusable React components effectively",
+          "Understand the React rendering lifecycle clearly",
+          "Master hooks including useEffect and useMemo",
+          "Implement context API and global state",
+          "Integrate API data using fetch and axios",
+          "Optimize performance with React best practices",
         ],
-        languages: ["English"],
-        hours: "10",
       },
       {
-        title: "Backend APIs with Node and Express",
-        description: "Create powerful REST APIs using Node.js and Express.",
-        authorId: new mongoose.Types.ObjectId(),
-        imageUrl: "https://placehold.co/600x400",
-        price: 2499,
-        categoryId: new mongoose.Types.ObjectId(),
-        isPublished: true,
+        title: "Fullstack Web Development Bootcamp",
+        description: "End-to-end web development with MERN stack.",
         outcomes: [
-          "Build scalable REST APIs using Express framework",
-          "Understand routing, middleware, and request handling",
-          "Connect and query data from MongoDB database",
-          "Implement authentication and authorization techniques",
-          "Write clean and modular Express code structure",
-          "Debug and test APIs with Postman and Jest",
+          "Design responsive frontend using Tailwind CSS",
+          "Build RESTful APIs using Express.js",
+          "Integrate MongoDB with Mongoose efficiently",
+          "Handle user authentication with JWT tokens",
+          "Deploy applications on cloud platforms easily",
+          "Debug and test both frontend and backend",
         ],
-        languages: ["English"],
-        hours: "12",
+      },
+      {
+        title: "Advanced TypeScript Programming",
+        description: "Master advanced TypeScript features and tooling.",
+        outcomes: [
+          "Write safe and scalable TypeScript code",
+          "Understand generics and advanced types",
+          "Use utility types like Partial and Omit",
+          "Integrate TypeScript with React projects",
+          "Enforce API contracts using interfaces",
+          "Set up tsconfig for large applications",
+        ],
+      },
+      {
+        title: "Modern Python for Developers",
+        description: "Become proficient in Python for real-world use.",
+        outcomes: [
+          "Write clean and readable Python scripts",
+          "Understand Python’s object-oriented features",
+          "Use built-in functions and modules smartly",
+          "Handle file I/O and error exceptions",
+          "Work with virtual environments and pip",
+          "Create automation and data scripts easily",
+        ],
+      },
+      {
+        title: "Java Programming for Beginners",
+        description: "Get started with Java and OOP basics.",
+        outcomes: [
+          "Learn syntax and structure of Java language",
+          "Understand object-oriented programming concepts",
+          "Use classes, interfaces, and polymorphism well",
+          "Handle input/output and exceptions gracefully",
+          "Build simple CLI projects and games",
+          "Prepare for Java certification effectively",
+        ],
+      },
+      {
+        title: "UI/UX Design Principles",
+        description: "Learn fundamentals of creating intuitive interfaces.",
+        outcomes: [
+          "Understand user behavior and accessibility",
+          "Design wireframes and mockups using Figma",
+          "Apply color theory and typography properly",
+          "Ensure responsiveness across screen sizes",
+          "Conduct user testing and usability audits",
+          "Create consistent and elegant UI components",
+        ],
+      },
+      {
+        title: "Database Essentials with MongoDB",
+        description: "Master NoSQL database design and querying.",
+        outcomes: [
+          "Design flexible schemas using MongoDB",
+          "Use Mongoose to model application data",
+          "Perform CRUD operations efficiently",
+          "Build relationships using references and population",
+          "Use indexes and aggregation pipelines",
+          "Understand replication and backup strategies",
+        ],
+      },
+      {
+        title: "DevOps and CI/CD Pipeline Setup",
+        description: "Automate deployments and streamline workflows.",
+        outcomes: [
+          "Understand the core DevOps lifecycle clearly",
+          "Set up CI/CD with GitHub Actions or Jenkins",
+          "Containerize apps using Docker and images",
+          "Configure deployment pipelines and environments",
+          "Monitor logs, health, and server performance",
+          "Write infrastructure as code with Terraform",
+        ],
+      },
+      {
+        title: "Cybersecurity Basics for Developers",
+        description: "Secure your applications from common threats.",
+        outcomes: [
+          "Understand common web vulnerabilities in depth",
+          "Sanitize input and handle authentication securely",
+          "Implement role-based access control easily",
+          "Encrypt sensitive user data with hashing",
+          "Use HTTPS and secure headers correctly",
+          "Monitor and log suspicious user activity",
+        ],
+      },
+      {
+        title: "Data Structures & Algorithms",
+        description: "Crack coding interviews and write efficient code.",
+        outcomes: [
+          "Understand time and space complexity properly",
+          "Implement common data structures manually",
+          "Solve recursive and dynamic programming problems",
+          "Master searching and sorting techniques",
+          "Use graphs, trees, and heaps efficiently",
+          "Practice 100+ real-world algorithm challenges",
+        ],
       },
     ];
 
-    for (const courseData of coursesData) {
-      const course = new Course(courseData);
-      await course.save();
+    for (const courseItem of courseData) {
+      const course = await Course.create({
+        title: courseItem.title,
+        description: courseItem.description,
+        authorId,
+        imageUrl: "https://placehold.co/600x400",
+        price: 1499,
+        categoryId: new Types.ObjectId(),
+        isPublished: false,
+        outcomes: courseItem.outcomes,
+        languages: ["English"],
+        hours: "12",
+        modules: [],
+        chapters: [],
+        attachments: [],
+        purchases: [],
+      });
 
-      const chapters = [
+      const moduleIds: Types.ObjectId[] = [];
+
+      const modules = [
         {
-          title: "Introduction & Setup",
+          title: `${course.title} - Module 1`,
           position: 1,
-          courseId: course._id,
-          isPublished: true,
+          isPublished: false,
           isFree: true,
-          description: "Setup environment and understand the course structure",
         },
         {
-          title: "Deep Dive into Core Concepts",
+          title: `${course.title} - Module 2`,
           position: 2,
-          courseId: course._id,
-          isPublished: true,
+          isPublished: false,
           isFree: false,
-          description: "Explore important programming principles in depth.",
         },
         {
-          title: "Final Project",
+          title: `${course.title} - Module 3`,
           position: 3,
-          courseId: course._id,
-          isPublished: true,
+          isPublished: false,
           isFree: false,
-          description: "Build a full-featured project to apply concepts.",
         },
       ];
 
-      await Chapter.insertMany(chapters);
+      for (const mod of modules) {
+        const module = await Module.create({
+          ...mod,
+          courseId: course._id,
+          chapters: [],
+        });
+
+        const createdChapters = await Chapter.insertMany([
+          {
+            title: `${mod.title} - Chapter 1`,
+            position: 1,
+            isPublished: false,
+            isFree: true,
+            description: "Intro to core concepts",
+            courseId: course._id,
+            moduleId: module._id,
+            userProgress: [],
+          },
+          {
+            title: `${mod.title} - Chapter 2`,
+            position: 2,
+            isPublished: false,
+            isFree: false,
+            description: "Hands-on implementation",
+            courseId: course._id,
+            moduleId: module._id,
+            userProgress: [],
+          },
+        ]);
+
+        module.chapters = createdChapters.map((ch) => ch._id as Types.ObjectId);
+        await module.save();
+
+        moduleIds.push(module._id as Types.ObjectId);
+      }
+
+      course.modules = moduleIds;
+      await course.save();
     }
 
-    console.log("✅ Seeding complete");
+    console.log("✅ Seed completed with 10 unpublished courses");
     process.exit(0);
   } catch (error) {
-    console.error("❌ Seeding failed:", error);
+    console.error("❌ Seed error:", error);
     process.exit(1);
   }
 }
 
 seed();
-
-

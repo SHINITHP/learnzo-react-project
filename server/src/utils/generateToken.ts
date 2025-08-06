@@ -4,6 +4,7 @@ import logger from './logger';
 interface TokenPayload {
     userId: string;
     email: string;
+    role: "student" | "instructor" | "admin";
 }
 
 const generateToken = async (user: TokenPayload ): Promise<{ accessToken: string; refreshToken: string }> => { // Type user and return value

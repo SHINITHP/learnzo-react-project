@@ -1,6 +1,6 @@
 import { Attachment, Course, Purchase } from "./course.model";
 import logger from "../../utils/logger";
-import { IChapter, ICourse } from "../../types";
+import { IChapter, ICourse, IModule } from "../../types";
 import ApiError from "../../utils/apiError";
 import { Chapter } from "../chapter/chapter.model";
 import mongoose from "mongoose";
@@ -36,7 +36,7 @@ class CourseService {
     return attachmentIds;
   }
 
-  static async togglePublishChapterService({
+  static async togglePublishCourseService({
     authorId,
     id,
     publish,
@@ -50,11 +50,11 @@ class CourseService {
     const course = await Course.findOne({
       _id: new mongoose.Types.ObjectId(id),
       authorId,
-    }).populate<{ chapters: IChapter[] }>("chapters");
+    })  .populate<{ modules: IModule[] }>("modules");
     if (!course) throw new ApiError(404, "Course not found or unauthorized");
 
-    const hasPublishedChapter = course.chapters.some(
-      (chapter) => chapter.isPublished
+    const hasPublishedModule = course.modules.some(
+      (module) => module.isPublished
     );
 
     if (
@@ -62,7 +62,7 @@ class CourseService {
       !course.description ||
       !course.imageUrl ||
       !course.categoryId ||
-      !hasPublishedChapter
+      !hasPublishedModule
     )
       throw new ApiError(401, "Missing required fields");
 

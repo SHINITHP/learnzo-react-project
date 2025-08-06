@@ -9,7 +9,7 @@ import {
   verifyOTPToken,
 } from "../../utils/otp";
 import { User } from "../user/user.model";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 class AuthService {
   static async signIn(data: ISignInData) {
@@ -38,6 +38,7 @@ class AuthService {
     const { accessToken, refreshToken } = await generateToken({
       userId: admin._id.toString(),
       email: admin.email,
+      role: admin.role,
     });
 
     // Return success response with tokens
@@ -51,32 +52,37 @@ class AuthService {
     };
   }
 
-  static async refreshToken(refreshToken: string) {
+  static async refreshToken(token: string) {
     try {
-      if (!refreshToken) {
-        throw new ApiError(403, "No refresh token provided.");
+      if (!token) {
+        throw new ApiError(401, "No refresh token provided.");
       }
 
-      const decoded = jwt.decode(refreshToken) as jwt.JwtPayload | null;
+      const payload: any = jwt.verify(token, process.env.JWT_SECRET!);
+      console.log("payload : -", payload);
+      const user = await User.findById(payload.userId);
 
-      if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
+      if (!user || user.refreshToken !== token)
         throw new ApiError(403, "Refresh token expired.");
-      }
 
-      const admin = verifyJWTToken(refreshToken);
-      logger.info(`user :: ${admin}`);
-      if (!admin) {
-        throw new ApiError(403, "Invalid refresh token.");
-      }
+      const { accessToken, refreshToken: newRefreshToken } =
+        await generateToken({
+          userId: user._id.toString(),
+          email: user.email,
+          role: user.role,
+        });
 
-      const { accessToken } = await generateToken({
-        userId: admin.userId,
-        email: admin.email,
-      });
+      user.refreshToken = newRefreshToken;
+      await user.save();
 
-      logger.info(`New access token generated for user: ${admin.userId}`);
-
-      return { token: accessToken, admin };
+      return {
+        user: {
+          userId: user._id,
+          email: user.email,
+        },
+        accessToken,
+        refreshToken: newRefreshToken,
+      };
     } catch (error: any) {
       logger.error(`Refresh token error: ${error.message}`);
       throw new ApiError(403, "Invalid or expired refresh token.");

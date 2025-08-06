@@ -1,9 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface Admin {
   userId: string;
   email: string;
+  role: string;
 }
 
 interface AuthState {
@@ -26,27 +26,30 @@ const authSlice = createSlice({
   reducers: {
     setAuth: (
       state,
-      action: PayloadAction<{ token: string; admin: Admin }>
+      action: PayloadAction<{ token: string; admin: Admin; tokenExpiry?: number }>
     ) => {
       state.token = action.payload.token;
       state.admin = action.payload.admin;
       state.isAuthenticated = true;
-      state.tokenExpiry = Date.now() + 15 * 60 * 1000;
-      localStorage.setItem('jwtToken', action.payload.token);
-      localStorage.setItem('userId', action.payload.admin.userId);
+      state.tokenExpiry = action.payload.tokenExpiry || null;
+
+      // Optionally persist auth *reference* (not the token itself!)
+      localStorage.setItem("auth_event", "login");
     },
     logout: (state) => {
       state.token = null;
       state.admin = null;
       state.isAuthenticated = false;
       state.tokenExpiry = null;
-      localStorage.removeItem('jwtToken');
-      localStorage.removeItem('userId');
+
+      // Broadcast logout to all tabs
+      localStorage.setItem("logout_event", Date.now().toString());
     },
-    
   },
 });
 
-export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
+export const selectIsAuthenticated = (state: { auth: AuthState }) =>
+  state.auth.isAuthenticated;
+
 export const { setAuth, logout } = authSlice.actions;
 export default authSlice.reducer;

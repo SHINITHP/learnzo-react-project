@@ -29,7 +29,7 @@ export const FileUpload = ({ initialData, isEditing }: FileUploadProps) => {
 
     try {
       setIsUploading(true);
-      const uploadedUrl = await uploadToCloudinary(file, "image");
+      const uploadedUrl = await uploadToCloudinary({ file, resourceType: "image" });
       setPreviewUrl(uploadedUrl);
       setIsUploaded(true);
 

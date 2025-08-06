@@ -1,32 +1,23 @@
-import type { RootState } from "@/redux/store";
+import baseQueryWithReauth from "@/redux/baseQuery";
 import type { CourseByIdResponse, CourseResponse, ICategoryResponse } from "@/types";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 export const courseApi = createApi({
   reducerPath: "courseApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api/user/courses",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-      console.log("Preparing headers for course API", token);
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-      console.log(token);
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Course"],
   endpoints: (builder) => ({
     getCourses: builder.query<CourseResponse, void>({
-      query: () => "",
+      query: () => "/user/courses",
       providesTags: ["Course"],
     }),
 
     getCourseById: builder.query<CourseByIdResponse, string>({
-      query: (id) => `/${id}`,
+      query: (id) => `/user/courses/${id}`,
       providesTags: (result, error, id) => [{ type: "Course", id }],
     }),
     getCategories: builder.query<ICategoryResponse, void>({
-      query: () => "/categories",
+      query: () => "/user/courses/categories",
     }),
   }),
 });

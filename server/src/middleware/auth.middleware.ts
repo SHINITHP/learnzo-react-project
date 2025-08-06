@@ -3,37 +3,45 @@ import jwt from "jsonwebtoken";
 import logger from "../utils/logger";
 
 export interface AuthRequest extends Request {
-  user?: { id: string; email: string; };
+  user?: { id: string; email: string; role: string };
 }
 
-export const authMiddleware = (
+export const authMiddleware = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
-  // Ensure authHeader is a string
-  if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith("Bearer ")) {
+
+  if (
+    !authHeader ||
+    typeof authHeader !== "string" ||
+    !authHeader.startsWith("Bearer ")
+  ) {
     logger.error("Unauthorized access attempt: No token provided or invalid format");
     res.status(401).json({ message: "Unauthorized: No token provided" });
-    return
+    return;
   }
 
   const token = authHeader.split(" ")[1];
-  if (!token) {
-    res.status(401).json({ message: "Unauthorized: No token" });
-    return;
-  }
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       userId: string;
       email: string;
+      role: string;
     };
 
-    req.user = { id: decoded.userId, email: decoded.email };
-    next();
+    req.user = { id: decoded.userId, email: decoded.email, role: decoded.role };
+    next(); // no return needed here
   } catch (err: any) {
-    console.log(err)
-    res.status(403).json({ message: "Invalid or expired token" });
+    logger.error("JWT verification failed:", err);
+    if (err) {
+      res.status(401).json({ message: "Access token expired" });
+      return;
+    }
+
+    res.status(403).json({ message: "Invalid token" });
+    return;
   }
 };

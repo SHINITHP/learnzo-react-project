@@ -6,23 +6,18 @@ interface User {
     userId: string;
     email: string;
 }
-
 interface AuthState {
     token: string | null;
     user: User | null;
     isAuthenticated: boolean;
     tokenExpiry: number | null;
 }
-
-
 const initialState: AuthState = {
     token: null,
     user: null,
     isAuthenticated: false,
     tokenExpiry: null,
 };
-
-
 
 const authSlice = createSlice({
     name: "auth",

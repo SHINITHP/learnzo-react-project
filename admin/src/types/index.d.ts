@@ -18,6 +18,31 @@ export interface Sale {
   total: number;
 }
 
+export interface IRefreshResponse {
+  success: boolean;
+  message: string;
+  data: {
+    admin: {
+      email: string;
+      userId: string;
+      role: string;
+    };
+    token: string;
+  };
+}
+
+export interface RootState {
+  auth: {
+    token: string | null;
+    user: any;
+    isAuthenticated: boolean;
+    tokenExpiry?: string | null;
+  };
+}
+
+
+
+
 export interface RecentSalesCardProps {
   data: Sale[];
 }

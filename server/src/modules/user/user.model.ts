@@ -8,6 +8,7 @@ interface IUser {
   password: string;
   createdAt?: Date;
   resetToken?: string;
+  refreshToken?: string;
   role: "student" | "instructor" | "admin";
   status: "pending" | "verified";
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -35,6 +36,9 @@ const userSchema = new Schema<IUser>(
       default: Date.now,
     },
     resetToken: {
+      type: String,
+    },
+    refreshToken: {
       type: String,
     },
     role: {

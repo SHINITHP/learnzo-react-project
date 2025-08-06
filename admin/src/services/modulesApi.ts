@@ -1,17 +1,10 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "@/redux/store";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import type { IModule, IUpdateCoursePayload } from "@/types";
+import baseQueryWithReauth from "@/redux/baseQuery";
 
 export const ModulesApi = createApi({
   reducerPath: "ModulesApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api/admin/modules",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Chapter", "Course", "Module"],
   endpoints: (builder) => ({
     createModules: builder.mutation<
@@ -19,7 +12,7 @@ export const ModulesApi = createApi({
       { title: string; courseId: string }
     >({
       query: ({ courseId, title }) => ({
-        url: "/create",
+        url: "/modules/create",
         method: "POST",
         body: { title, courseId },
       }),
@@ -34,7 +27,7 @@ export const ModulesApi = createApi({
       { id: string; courseId: string; updates: IUpdateCoursePayload }
     >({
       query: ({ id, courseId, updates }) => ({
-        url: `/${courseId}/${id}`,
+        url: `/modules/${courseId}/${id}`,
         method: "PUT",
         body: updates,
       }),
@@ -46,7 +39,7 @@ export const ModulesApi = createApi({
       { moduleId: string; courseId: string; publish: boolean }
     >({
       query: ({ moduleId, courseId, publish }) => ({
-        url: `/${courseId}/${moduleId}/publish`,
+        url: `/modules/${courseId}/${moduleId}/publish`,
         method: "PATCH",
         body: { publish },
       }),
@@ -60,7 +53,7 @@ export const ModulesApi = createApi({
       { moduleId: string; courseId: string }
     >({
       query: ({ moduleId, courseId }) => ({
-        url: `/${courseId}/${moduleId}`,
+        url: `/modules/${courseId}/${moduleId}`,
         method: "GET",
       }),
       providesTags: (result, error, { moduleId }) => [
@@ -73,7 +66,7 @@ export const ModulesApi = createApi({
       { courseId: string; list: { id: string; position: number }[] }
     >({
       query: ({ courseId, list }) => ({
-        url: `/reorder/${courseId}`,
+        url: `/modules/reorder/${courseId}`,
         method: "PUT",
         body: { list },
       }),
@@ -85,7 +78,7 @@ export const ModulesApi = createApi({
 
     deleteModule: builder.mutation<{ message: string }, { courseId: string; moduleId: string; }>({
       query: ({ courseId, moduleId }) => ({
-        url: `/${courseId}/delete-course/${moduleId}`,
+        url: `/modules/${courseId}/delete-course/${moduleId}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, { moduleId }) => [

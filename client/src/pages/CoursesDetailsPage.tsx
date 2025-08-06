@@ -10,6 +10,7 @@ import {
   Calendar,
   Heart,
   Lock,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,8 +29,16 @@ const CourseDetails = () => {
 
   if (!id) navigate("/courses");
 
-  const { data, error } = useGetCourseByIdQuery(id!);
+  const { data, error, isLoading } = useGetCourseByIdQuery(id!);
   const course = data?.data;
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-screen bg-slate-500.20 top-0 right-0 rounded-m flex items-center justify-center">
+        <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
+      </div>
+    );
+  }
 
   if (error || !course) {
     console.error("Error fetching course data:", error);

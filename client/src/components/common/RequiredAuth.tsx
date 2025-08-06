@@ -9,7 +9,7 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   if (!isAuthenticated) {
     return <Navigate to="/admin/sign-in" state={{ from: location }} replace />;
   }
-  
+
   return <>{children}</>;
 };
 

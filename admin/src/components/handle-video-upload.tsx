@@ -47,7 +47,7 @@ export const VideoUpload = ({ initialData, isEditing }: VideoUploadProps) => {
         onProgress: (percent) => setUploadProgress(percent),
       });
       setPreviewUrl(uploadedUrl);
-      setIsUploaded(true);
+      setIsUploaded(true); 
 
       await updateChapter({
         id: chapterId!,

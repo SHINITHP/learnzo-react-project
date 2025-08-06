@@ -88,7 +88,6 @@ export interface CourseByIdResponse {
   data: ICourse;
 }
 
-
 export interface ISignUpRequest {
   fullName: string;
   email: string;
@@ -96,7 +95,20 @@ export interface ISignUpRequest {
   confirmPassword: string;
 }
 
+
 export interface ISignInResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: {
+      email: string;
+      userId: string;
+    };
+    token: string;
+  };
+}
+
+export interface IRefreshResponse {
   success: boolean;
   message: string;
   data: {
@@ -111,4 +123,13 @@ export interface ISignInResponse {
 export interface ISignInRequest {
   email: string;
   password: string;
+}
+
+export interface RootState {
+  auth: {
+    token: string | null;
+    user: any;
+    isAuthenticated: boolean;
+    tokenExpiry?: string | null;
+  };
 }

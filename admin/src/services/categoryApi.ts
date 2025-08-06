@@ -1,17 +1,10 @@
-import type { RootState } from "@/redux/store";
+import baseQueryWithReauth from "@/redux/baseQuery";
 import type { ICategoryResponse } from "@/types";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 export const categoryApi = createApi({
   reducerPath: "categoryApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api/admin/",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Category"],
   endpoints: (builder) => ({
 

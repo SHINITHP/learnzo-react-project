@@ -1,33 +1,16 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "@/redux/store";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import type { ISignInResponse, ISignInRequest } from "@/types";
+import baseQueryWithReauth from "@/redux/baseQuery";
 
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api/admin/auth/",
-    credentials: "include",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     signIn: builder.mutation<ISignInResponse, ISignInRequest>({
       query: (data) => ({
-        url: "sign-in",
+        url: "/auth/sign-in",
         method: "POST",
         body: data,
-        credentials: "include",
-      }),
-    }),
-    refreshToken: builder.mutation<ISignInResponse, void>({
-      query: () => ({
-        url: "refreshToken",
-        method: "POST",
         credentials: "include",
       }),
     }),
@@ -36,7 +19,7 @@ export const authApi = createApi({
       { adminId: string }
     >({
       query: (data) => ({
-        url: "logout",
+        url: "/auth/logout",
         method: "POST",
         body: data,
         credentials: "include",
@@ -47,6 +30,5 @@ export const authApi = createApi({
 
 export const {
   useSignInMutation,
-  useRefreshTokenMutation,
   useAdminLogoutMutation,
 } = authApi;

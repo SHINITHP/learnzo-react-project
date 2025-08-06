@@ -1,29 +1,21 @@
-import type { RootState } from "@/redux/store";
+import baseQueryWithReauth from "@/redux/baseQuery";
 import type {
-  IAttachment,
   ICourse,
   ICourseCreationResponse,
   ICourseByIDResponse,
   ICourseResponse,
   IUpdateCoursePayload,
 } from "@/types";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 export const courseApi = createApi({
   reducerPath: "courseApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api/admin/courses",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-      if (token) headers.set("Authorization", `Bearer ${token}`);
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Course", "Attachments"],
   endpoints: (builder) => ({
     createCourse: builder.mutation<ICourseCreationResponse, { title: string }>({
       query: (course) => ({
-        url: "/",
+        url: "/courses",
         method: "POST",
         body: course,
       }),
@@ -35,7 +27,7 @@ export const courseApi = createApi({
       { attachments: { name: string; url: string; courseId: string }[] }
     >({
       query: ({ attachments }) => ({
-        url: `/attachments`,
+        url: `/courses/attachments`,
         method: "POST",
         body: { attachments },
       }),
@@ -46,12 +38,12 @@ export const courseApi = createApi({
     }),
 
     getCourses: builder.query<ICourseResponse, void>({
-      query: () => "/get-courses",
+      query: () => "/courses/get-courses",
       providesTags: ["Course"],
     }),
 
     getCourseById: builder.query<ICourseByIDResponse, string>({
-      query: (id) => `/${id}`,
+      query: (id) => `/courses/${id}`,
       providesTags: (result, error, id) => [{ type: "Course", id }],
     }),
 
@@ -60,7 +52,7 @@ export const courseApi = createApi({
       { id: string; publish: boolean }
     >({
       query: ({ id, publish }) => ({
-        url: `/${id}/publish`,
+        url: `/courses/${id}/publish`,
         method: "PATCH",
         body: { publish },
       }),
@@ -72,7 +64,7 @@ export const courseApi = createApi({
       { id: string; updates: IUpdateCoursePayload }
     >({
       query: ({ id, updates }) => ({
-        url: `/${id}`,
+        url: `/courses/${id}`,
         method: "PATCH",
         body: updates,
       }),
@@ -80,7 +72,7 @@ export const courseApi = createApi({
     }),
     deleteCourse: builder.mutation<{ message: string }, string>({
       query: (id) => ({
-        url: `/delete-course/${id}`,
+        url: `/courses/delete-course/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [

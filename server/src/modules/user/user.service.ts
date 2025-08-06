@@ -10,7 +10,7 @@ import {
 } from "../../utils/otp";
 import RefreshToken from "./refreshToken.model";
 import { User } from "./user.model";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 class AuthService {
   static async signUp(data: ISignUpData) {
@@ -33,37 +33,63 @@ class AuthService {
     return { email, token };
   }
 
-  static async refreshToken(refreshToken: string) {
-      try {
-        if (!refreshToken) {
-          throw new ApiError(403, "No refresh token provided.");
-        }
-  
-        const decoded = jwt.decode(refreshToken) as jwt.JwtPayload | null;
-  
-        if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
-          throw new ApiError(403, "Refresh token expired.");
-        }
-  
-        const admin = verifyJWTToken(refreshToken);
-        logger.info(`user :: ${admin}`);
-        if (!admin) {
-          throw new ApiError(403, "Invalid refresh token.");
-        }
-  
-        const { accessToken } = await generateToken({
-          userId: admin.userId,
-          email: admin.email,
-        });
-  
-        logger.info(`New access token generated for user: ${admin.userId}`);
-  
-        return { token: accessToken, admin };
-      } catch (error: any) {
-        logger.error(`Refresh token error: ${error.message}`);
-        throw new ApiError(403, "Invalid or expired refresh token.");
+  static async refreshToken(token: string) {
+    try {
+      if (!token) {
+        throw new ApiError(401, "No refresh token provided.");
       }
+
+      const payload: any = jwt.verify(token, process.env.JWT_SECRET!);
+      console.log("payload : -", payload)
+      const user = await User.findById(payload.userId);
+
+      if (!user || user.refreshToken !== token)
+        throw new ApiError(403, "Refresh token expired.");
+
+      const { accessToken, refreshToken: newRefreshToken } =
+        await generateToken({
+          userId: user._id.toString(),
+          email: user.email,
+          role: user.role,
+        });
+
+      user.refreshToken = newRefreshToken;
+      await user.save();
+
+      return {
+        user: {
+          userId: user._id,
+          email: user.email,
+        },
+        accessToken,
+        refreshToken: newRefreshToken,
+      };
+      // const decoded = jwt.decode(refreshToken) as jwt.JwtPayload | null;
+
+      // if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
+      //   throw new ApiError(403, "Refresh token expired.");
+      // }
+
+      // const admin = verifyJWTToken(refreshToken);
+      // logger.info(`user :: ${admin}`);
+      // if (!admin) {
+      //   throw new ApiError(403, "Invalid refresh token.");
+      // }
+
+      // const { accessToken } = await generateToken({
+      //   userId: admin.userId,
+      //   email: admin.email,
+      //   role: admin.role,
+      // });
+
+      // logger.info(`New access token generated for user: ${admin.userId}`);
+
+      // return { token: accessToken, admin };
+    } catch (error: any) {
+      logger.error(`Refresh token error: ${error.message}`);
+      throw new ApiError(403, "Invalid or expired refresh token.");
     }
+  }
 
   static async verifyOTP(data: IVerifyOTP) {
     const { email: verifiedEmail } = verifyOTPToken(data.token, data.otp);
@@ -85,6 +111,7 @@ class AuthService {
     const { accessToken, refreshToken } = await generateToken({
       userId: user._id.toString(),
       email: user.email,
+      role: user.role,
     });
 
     await RefreshToken.create({
@@ -114,8 +141,10 @@ class AuthService {
       throw new ApiError(400, "User not Found.");
     }
 
-    if(user.role !== "student"){
-      logger.warn(`Login failed - Access denied for non-student user: ${email}`);
+    if (user.role !== "student") {
+      logger.warn(
+        `Login failed - Access denied for non-student user: ${email}`
+      );
       throw new ApiError(400, "Access denied for non-student user.");
     }
 
@@ -130,18 +159,23 @@ class AuthService {
     const { accessToken, refreshToken } = await generateToken({
       userId: user._id.toString(),
       email: user.email,
+      role: user.role,
     });
 
+    //set refreshToken to user DB.
+    user.refreshToken = refreshToken;
+    await user.save();
+
     // Fallback to store in DB if Redis fails
-    try {
-      await RefreshToken.create({
-        user: user._id,
-        token: refreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      });
-    } catch (error) {
-      logger.error(`Error While storing refresh Token to DB ${error}`);
-    }
+    // try {
+    //   await RefreshToken.create({
+    //     user: user._id,
+    //     token: refreshToken,
+    //     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    //   });
+    // } catch (error) {
+    //   logger.error(`Error While storing refresh Token to DB ${error}`);
+    // }
 
     // Return success response with tokens
     return {

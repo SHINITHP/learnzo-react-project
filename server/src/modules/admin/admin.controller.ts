@@ -38,20 +38,36 @@ export const signInAdmin = async (
 
 };
 
-export const refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const refreshToken = req.cookies.refreshToken;
-        logger.info(`Refresh Token  called!!, : ${refreshToken}`)
+export const refreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    logger.info(`Refresh Token  called!!, : ${refreshToken}`);
 
-        if (!refreshToken) {
-            return next(new ApiError(403, "No token provided"));
-        }
-
-        const result = await AuthService.refreshToken(refreshToken)
-
-        ApiResponse.success(res, "New access token generated", { token: result.token, admin: result.admin } , 200);
-    } catch (error: any) {
-        console.log('error in refreshTOken',error);
-        next(new ApiError(403, error));
+    if (!refreshToken) {
+      return next(new ApiError(401, "No token provided"));
     }
+
+    const result = await AuthService.refreshToken(refreshToken);
+
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    ApiResponse.success(
+      res,
+      "New access token generated",
+      { token: result.accessToken, admin: result.user },
+      200
+    );
+  } catch (error: any) {
+    console.log("error in refreshTOken", error);
+    next(new ApiError(403, error));
+  }
 };
